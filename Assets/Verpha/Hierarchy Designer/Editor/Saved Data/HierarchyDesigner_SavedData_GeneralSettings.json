@@ -1,0 +1,23 @@
+{
+    "LayoutMode": 2,
+    "TreeMode": 1,
+    "EnableGameObjectMainIcon": true,
+    "EnableGameObjectComponentIcons": false,
+    "EnableHierarchyTree": true,
+    "EnableGameObjectTag": false,
+    "EnableGameObjectLayer": false,
+    "EnableHierarchyRows": true,
+    "EnableHierarchyLines": false,
+    "EnableHierarchyButtons": false,
+    "EnableMajorShortcuts": true,
+    "DisableHierarchyDesignerDuringPlayMode": true,
+    "ExcludeFolderProperties": true,
+    "ExcludedComponents": [
+        "Transform",
+        "RectTransform",
+        "CanvasRenderer"
+    ],
+    "MaximumComponentIconsAmount": 10,
+    "ExcludedTags": [],
+    "ExcludedLayers": []
+}

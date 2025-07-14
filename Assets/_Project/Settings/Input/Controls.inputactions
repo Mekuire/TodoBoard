@@ -1,0 +1,54 @@
+{
+    "name": "Controls",
+    "maps": [
+        {
+            "name": "UI",
+            "id": "97e7cda3-42a9-459b-8164-4b1a022b999b",
+            "actions": [
+                {
+                    "name": "ToggleAlwaysOnTop",
+                    "type": "Button",
+                    "id": "b541d593-3501-4a27-bc1a-ffa7bdf8e6cb",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "HideAllPanels",
+                    "type": "Button",
+                    "id": "87e7b7b7-c1e9-4993-a115-a75934822de7",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "f8cc509c-0d4a-4a74-8915-e31f64a2d0d4",
+                    "path": "<Keyboard>/f2",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ToggleAlwaysOnTop",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "7d91d9a3-be0d-4c1c-a249-e6070abfc26e",
+                    "path": "<Keyboard>/f1",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "HideAllPanels",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}
