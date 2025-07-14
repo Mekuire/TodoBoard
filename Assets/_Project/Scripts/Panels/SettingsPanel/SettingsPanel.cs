@@ -135,7 +135,8 @@ namespace TodoBoard
             _userInput.UI.ToggleAlwaysOnTop.performed += ToggleAlwaysOnTopOnPerformed;
             _alwaysOnTopToggle.onValueChanged.AddListener(AlwaysOnTopChanged);
 
-            _alwaysOnTopToggle.isOn = _currentSettings.alwaysOnTop;
+            _alwaysOnTopToggle.SetIsOnWithoutNotify(_currentSettings.alwaysOnTop);
+            ChangeAlwaysOnTop();
             
             OnFPSFocusedChanged(_currentSettings.fpsFocused);
             OnFPSUnFocusedChanged(_currentSettings.fpsUnFocused);
