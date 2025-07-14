@@ -66,7 +66,6 @@ namespace TodoBoard
         private void OnEnable()
         {
             _languageDropdown.onValueChanged.AddListener(OnLanguageChanged);
-            _alwaysOnTopToggle.onValueChanged.AddListener(AlwaysOnTopChanged);
             
             _fpsFocusedSlider.onValueChanged.AddListener(OnFPSFocusedChanged);
             _fpsUnfocusedSlider.onValueChanged.AddListener(OnFPSUnFocusedChanged);
@@ -83,7 +82,6 @@ namespace TodoBoard
         private void OnDisable()
         {
             _languageDropdown.onValueChanged.RemoveListener(OnLanguageChanged);
-            _alwaysOnTopToggle.onValueChanged.RemoveListener(AlwaysOnTopChanged);
             
             _fpsFocusedSlider.onValueChanged.RemoveListener(OnFPSFocusedChanged);
             _fpsUnfocusedSlider.onValueChanged.RemoveListener(OnFPSUnFocusedChanged);
@@ -97,6 +95,13 @@ namespace TodoBoard
             _pomodoroAlarmSlider.onValueChanged.RemoveListener(OnPomodoroVolumeChanged);
             
             Save();
+        }
+
+        private void OnDestroy()
+        {
+            _userInput.UI.ToggleAlwaysOnTop.performed -= ToggleAlwaysOnTopOnPerformed;
+            _alwaysOnTopToggle.onValueChanged.RemoveListener(AlwaysOnTopChanged);
+            Application.focusChanged -= OnApplicationFocusChanged;
         }
 
         private void SetupLanguageSettings()
@@ -126,14 +131,24 @@ namespace TodoBoard
 
         private void SetupDisplaySettings()
         {
+            Application.focusChanged += OnApplicationFocusChanged;
+            _userInput.UI.ToggleAlwaysOnTop.performed += ToggleAlwaysOnTopOnPerformed;
+            _alwaysOnTopToggle.onValueChanged.AddListener(AlwaysOnTopChanged);
+
             _alwaysOnTopToggle.isOn = _currentSettings.alwaysOnTop;
-            ChangeAlwaysOnTop();
             
             OnFPSFocusedChanged(_currentSettings.fpsFocused);
             OnFPSUnFocusedChanged(_currentSettings.fpsUnFocused);
             
             QualitySettings.vSyncCount = 0;
-            Application.targetFrameRate = Application.isFocused ? _currentSettings.fpsFocused : _currentSettings.fpsUnFocused;
+            OnApplicationFocusChanged(Application.isFocused);
+        }
+
+        private void ToggleAlwaysOnTopOnPerformed(InputAction.CallbackContext obj)
+        {
+            _currentSettings.alwaysOnTop = !_currentSettings.alwaysOnTop;
+            _alwaysOnTopToggle.isOn = _currentSettings.alwaysOnTop;
+            //AlwaysOnTopChanged(_currentSettings.alwaysOnTop);
         }
 
         private void SetupInputSettings()
@@ -262,33 +277,18 @@ namespace TodoBoard
             _fpsFocusedNumber.text = value.ToString();
             _currentSettings.fpsFocused = (int)value;
             
-            if (Application.isFocused)
-            {
-                Application.targetFrameRate = _currentSettings.fpsFocused;
-            }
+            Application.targetFrameRate = _currentSettings.fpsFocused;
         }
         
         private void OnFPSUnFocusedChanged(float value)
         {
             _fpsUnfocusedNumber.text = value.ToString();
-            _currentSettings.fpsFocused = (int)value;
-
-            if (!Application.isFocused)
-            {
-                Application.targetFrameRate = _currentSettings.fpsUnFocused;
-            }
+            _currentSettings.fpsUnFocused = (int)value;
         }
 
-        private void OnApplicationFocus(bool hasFocus)
+        private void OnApplicationFocusChanged(bool hasFocus)
         {
-            if (hasFocus)
-            {
-                Application.targetFrameRate = _currentSettings.fpsFocused;
-            }
-            else
-            {
-                Application.targetFrameRate = _currentSettings.fpsUnFocused;
-            }
+            Application.targetFrameRate = hasFocus ? _currentSettings.fpsFocused : _currentSettings.fpsUnFocused;
         }
 
         private void Save()
