@@ -1,11 +1,10 @@
 using TMPro;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace TodoBoard
 {
-    public class Habit : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+    public class Habit : MonoBehaviour
     {
         [SerializeField] private TMP_InputField _inputField;
         [SerializeField] private Button _deleteHabitButton;
@@ -16,6 +15,7 @@ namespace TodoBoard
         [SerializeField] private Toggle _toggleFriday;
         [SerializeField] private Toggle _toggleSaturday;
         [SerializeField] private Toggle _toggleSunday;
+        [SerializeField] private PointerEvents _pointerEventsObject;
         
         private HabitsPanel.HabitData _habitData;
         private HabitsPanel.IHabitDeleter _deleter;
@@ -53,7 +53,8 @@ namespace TodoBoard
         {
             _deleteHabitButton.onClick.AddListener(OnTaskDelete);
             _inputField.onEndEdit.AddListener(OnNameChanged);
-            
+            _pointerEventsObject.OnPointerEntered += OnPointerEnter;
+            _pointerEventsObject.OnPointerExited += OnPointerExit;
             _toggleMonday.onValueChanged.AddListener(OnMondayToggleChanged);
             _toggleTuesday.onValueChanged.AddListener(OnTuesdayToggleChanged);
             _toggleWednesday.onValueChanged.AddListener(OnWednesdayToggleChanged);
@@ -120,7 +121,8 @@ namespace TodoBoard
         {
             _deleteHabitButton.onClick.RemoveListener(OnTaskDelete);
             _inputField.onSubmit.RemoveListener(OnNameChanged);
-            
+            _pointerEventsObject.OnPointerEntered -= OnPointerEnter;
+            _pointerEventsObject.OnPointerExited -= OnPointerExit;
             _toggleMonday.onValueChanged.RemoveListener(OnMondayToggleChanged);
             _toggleTuesday.onValueChanged.RemoveListener(OnTuesdayToggleChanged);
             _toggleWednesday.onValueChanged.RemoveListener(OnWednesdayToggleChanged);
@@ -130,12 +132,12 @@ namespace TodoBoard
             _toggleSunday.onValueChanged.RemoveListener(OnSundayToggleChanged);
         }
 
-        public void OnPointerEnter(PointerEventData eventData)
+        public void OnPointerEnter()
         {
             _deleteHabitButton.gameObject.SetActive(true);
         }
 
-        public void OnPointerExit(PointerEventData eventData)
+        public void OnPointerExit()
         {
             _deleteHabitButton.gameObject.SetActive(false);
         }

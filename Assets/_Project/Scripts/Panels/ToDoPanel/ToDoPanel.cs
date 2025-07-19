@@ -19,10 +19,10 @@ namespace TodoBoard
         [SerializeField] private RectTransform _listButtonsParent;
         [SerializeField] private ScrollRect _scrollView;
         [SerializeField] private GameObject _scrollContextPrefab;
-        [SerializeField] private Task _taskPrefab;
+        [SerializeField] private TaskItem taskItemPrefab;
         [Space] 
         [Header("Lists Edit Menu")] 
-        [SerializeField] private List _listPrefab;
+        [SerializeField] private ListItem listItemPrefab;
         [SerializeField] private Button _confirmListsButton;
         [SerializeField] private Button _addListButton;
         [SerializeField] private ScrollRect _listScrollView;
@@ -30,7 +30,7 @@ namespace TodoBoard
         [Header("Data")] 
         [SerializeField] private bool _saveDataInEditor = true;
 
-        private const int MaxLists = 4;
+        private const int MaxLists = 5;
         private ToDoData _currentData;
         private string _currentListId;
 
@@ -179,8 +179,8 @@ namespace TodoBoard
 
                 foreach (TaskData taskData in list.Tasks)
                 {
-                    Task task = Instantiate(_taskPrefab, _scrollView.content);
-                    task.Initialize(taskData, deleter: this, dataUpdater: this);
+                    TaskItem taskItem = Instantiate(taskItemPrefab, _scrollView.content);
+                    taskItem.Initialize(taskData, deleter: this, dataUpdater: this);
                 }
             }
         }
@@ -191,8 +191,8 @@ namespace TodoBoard
 
             foreach (TaskData taskData in taskList.Tasks)
             {
-                Task task = Instantiate(_taskPrefab, _scrollView.content);
-                task.Initialize(taskData, deleter: this, dataUpdater: this);
+                TaskItem taskItem = Instantiate(taskItemPrefab, _scrollView.content);
+                taskItem.Initialize(taskData, deleter: this, dataUpdater: this);
             }
         }
 
@@ -202,23 +202,23 @@ namespace TodoBoard
 
             foreach (TaskListData listData in data.TaskLists)
             {
-                List list = Instantiate(_listPrefab, _listScrollView.content);
-                list.Initialize(listData, deleter: this, dataUpdater: this);
+                ListItem listItem = Instantiate(listItemPrefab, _listScrollView.content);
+                listItem.Initialize(listData, deleter: this, dataUpdater: this);
             }
         }
 
         private void CreateTaskObject(TaskData data)
         {
-            Task task = Instantiate(_taskPrefab, _scrollView.content);
+            TaskItem taskItem = Instantiate(taskItemPrefab, _scrollView.content);
 
-            task.Initialize(data, deleter: this, dataUpdater: this);
+            taskItem.Initialize(data, deleter: this, dataUpdater: this);
         }
 
         private void CreateListObject(TaskListData taskList)
         {
-            List list = Instantiate(_listPrefab, _listScrollView.content);
+            ListItem listItem = Instantiate(listItemPrefab, _listScrollView.content);
 
-            list.Initialize(taskList, deleter: this, dataUpdater: this);
+            listItem.Initialize(taskList, deleter: this, dataUpdater: this);
         }
 
         private void CreateListButton(TaskListData list)

@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 namespace TodoBoard
 {
-    public class List : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+    public class ListItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
         [SerializeField] private TMP_InputField _inputField;
         [SerializeField] private Button _deleteListButton;

@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 namespace TodoBoard
 {
-    public class Task : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+    public class TaskItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
         [SerializeField] private TMP_InputField _inputField;
         [SerializeField] private Toggle _toggle;

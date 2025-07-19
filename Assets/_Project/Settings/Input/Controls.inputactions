@@ -2,7 +2,7 @@
     "name": "Controls",
     "maps": [
         {
-            "name": "UI",
+            "name": "MenuUI",
             "id": "97e7cda3-42a9-459b-8164-4b1a022b999b",
             "actions": [
                 {

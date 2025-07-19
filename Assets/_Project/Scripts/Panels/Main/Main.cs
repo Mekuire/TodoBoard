@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using Desdinova;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -9,14 +11,17 @@ namespace TodoBoard
     public class Main : MonoBehaviour, ISaveLoadService
     {
         [SerializeField] private SlidingList _slideObject;
+        [Space]
         [SerializeField] private ToDoPanel _toDoPanel;
         [SerializeField] private HabitsPanel _habitsPanel;
         [SerializeField] private SettingsPanel _settingsPanel;
+        [Space]
         [SerializeField] private TransparentWindowController _windowController;
         
         private Button _button;
-        private bool _listExpanded;
         private UserInput  _userInput;
+        private bool _listExpanded;
+        private List<Panel> _panels;
         
         private void Awake()
         {
@@ -27,19 +32,27 @@ namespace TodoBoard
             _toDoPanel.Initialize(this);
             _habitsPanel.Initialize(this);
             _settingsPanel.Initialize(this, _windowController, _userInput);
+
+            _panels = new List<Panel>()
+            {
+                _toDoPanel,
+                _habitsPanel,
+                _settingsPanel
+            };
         }
 
         private void OnEnable()
         {
             _button.onClick.AddListener(SwitchListState);
-            _userInput.UI.HideAllPanels.performed += HideAllPanelsOnperformed;
+            _userInput.MenuUI.HideAllPanels.performed += HideAllPanelsOnPerformed;
         }
 
-        private void HideAllPanelsOnperformed(InputAction.CallbackContext obj)
+        private void HideAllPanelsOnPerformed(InputAction.CallbackContext obj)
         {
-            if (_habitsPanel.IsActive) _habitsPanel.Hide();
-            if (_settingsPanel.IsActive)_settingsPanel.Hide();
-            if (_toDoPanel.IsActive) _toDoPanel.Hide();
+            foreach (Panel panel in _panels)
+            {
+                if (panel.IsActive) panel.Hide();
+            }
             
             if (!_slideObject) return;
             _slideObject.Collapse(() => _listExpanded = false);
@@ -48,9 +61,9 @@ namespace TodoBoard
         private void OnDisable()
         {
             _button.onClick.RemoveListener(SwitchListState);
-            _userInput.UI.HideAllPanels.performed -= HideAllPanelsOnperformed;
+            _userInput.MenuUI.HideAllPanels.performed -= HideAllPanelsOnPerformed;
         }
-
+        
         public void SaveData<T>(T data, string fileName)
         {
             DataService.SaveData(data, fileName);

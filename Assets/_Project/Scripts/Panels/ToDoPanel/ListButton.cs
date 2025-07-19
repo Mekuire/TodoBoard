@@ -24,7 +24,7 @@ namespace TodoBoard
 
         private void OnDestroy()
         {
-            _button.onClick.RemoveListener(OnListOpen);
+            if (_button != null) _button.onClick.RemoveListener(OnListOpen);
         }
 
         private void OnListOpen()

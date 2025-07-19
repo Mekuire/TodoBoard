@@ -15,8 +15,20 @@ MonoBehaviour:
   m_GroupName: "Localization-String-Tables-\u0420\u0443\u0441\u0441\u043A\u0438\u0439"
   m_GUID: 04ac2668bf56ed545b1901a16e8360d2
   m_SerializeEntries:
+  - m_GUID: 01d44fca1d505bb44aac5758332b1f06
+    m_Address: Settings_ru
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-ru
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 17e2b4f1b1837b4468f85d36bad3a788
     m_Address: ToDoList_ru
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-ru
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 566269060aee26c4fb4acdf1b731b95b
+    m_Address: Habits_ru
     m_ReadOnly: 1
     m_SerializedLabels:
     - Locale-ru

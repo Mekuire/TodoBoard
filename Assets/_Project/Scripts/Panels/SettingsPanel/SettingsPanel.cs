@@ -99,7 +99,7 @@ namespace TodoBoard
 
         private void OnDestroy()
         {
-            _userInput.UI.ToggleAlwaysOnTop.performed -= ToggleAlwaysOnTopOnPerformed;
+            _userInput.MenuUI.ToggleAlwaysOnTop.performed -= ToggleAlwaysOnTopOnPerformed;
             _alwaysOnTopToggle.onValueChanged.RemoveListener(AlwaysOnTopChanged);
             Application.focusChanged -= OnApplicationFocusChanged;
         }
@@ -132,7 +132,7 @@ namespace TodoBoard
         private void SetupDisplaySettings()
         {
             Application.focusChanged += OnApplicationFocusChanged;
-            _userInput.UI.ToggleAlwaysOnTop.performed += ToggleAlwaysOnTopOnPerformed;
+            _userInput.MenuUI.ToggleAlwaysOnTop.performed += ToggleAlwaysOnTopOnPerformed;
             _alwaysOnTopToggle.onValueChanged.AddListener(AlwaysOnTopChanged);
 
             _alwaysOnTopToggle.SetIsOnWithoutNotify(_currentSettings.alwaysOnTop);
@@ -149,7 +149,6 @@ namespace TodoBoard
         {
             _currentSettings.alwaysOnTop = !_currentSettings.alwaysOnTop;
             _alwaysOnTopToggle.isOn = _currentSettings.alwaysOnTop;
-            //AlwaysOnTopChanged(_currentSettings.alwaysOnTop);
         }
 
         private void SetupInputSettings()
@@ -159,8 +158,8 @@ namespace TodoBoard
                 _userInput.LoadBindingOverridesFromJson(_currentSettings.inputOverride);
             }
             
-            UpdateBindingDisplay(_userInput.UI.HideAllPanels, _hideAllPanelsText);
-            UpdateBindingDisplay(_userInput.UI.ToggleAlwaysOnTop, _toggleAlwaysOnTopText);
+            UpdateBindingDisplay(_userInput.MenuUI.HideAllPanels, _hideAllPanelsText);
+            UpdateBindingDisplay(_userInput.MenuUI.ToggleAlwaysOnTop, _toggleAlwaysOnTopText);
         }
 
         private void SetupAudioSettings()
@@ -204,17 +203,17 @@ namespace TodoBoard
 
         private void OnToggleAlwaysOnTopPressed()
         {
-            PerformRebind(_userInput.UI.ToggleAlwaysOnTop, _toggleAlwaysOnTopText);
+            PerformRebind(_userInput.MenuUI.ToggleAlwaysOnTop, _toggleAlwaysOnTopText);
         }
         
         private void OnHideAllButtonPressed()
         {
-            PerformRebind(_userInput.UI.HideAllPanels, _hideAllPanelsText);
+            PerformRebind(_userInput.MenuUI.HideAllPanels, _hideAllPanelsText);
         }
 
         private void PerformRebind(InputAction action, TextMeshProUGUI text)
         {
-            text.text = "Press key...";
+            text.text = LocalizationSettings.StringDatabase.GetLocalizedString("Settings", "settings.pressKey");
             
             _rebindingOperation?.Dispose();
 
@@ -254,15 +253,15 @@ namespace TodoBoard
         
         private void OnRestoreToggleAlwaysOnTopPressed()
         {
-            _userInput.UI.ToggleAlwaysOnTop.RemoveAllBindingOverrides();
-            UpdateBindingDisplay(_userInput.UI.ToggleAlwaysOnTop, _toggleAlwaysOnTopText);
+            _userInput.MenuUI.ToggleAlwaysOnTop.RemoveAllBindingOverrides();
+            UpdateBindingDisplay(_userInput.MenuUI.ToggleAlwaysOnTop, _toggleAlwaysOnTopText);
             SaveBindingOverrides();
         }
         
         private void OnHideAllButtonRestorePressed()
         {
-            _userInput.UI.HideAllPanels.RemoveAllBindingOverrides();
-            UpdateBindingDisplay(_userInput.UI.HideAllPanels, _hideAllPanelsText);
+            _userInput.MenuUI.HideAllPanels.RemoveAllBindingOverrides();
+            UpdateBindingDisplay(_userInput.MenuUI.HideAllPanels, _hideAllPanelsText);
             SaveBindingOverrides();
         }
         
@@ -275,21 +274,28 @@ namespace TodoBoard
 
         private void OnFPSFocusedChanged(float value)
         {
-            _fpsFocusedNumber.text = value.ToString();
-            _currentSettings.fpsFocused = (int)value;
+            int intValue = (int)value;
+            int fps = intValue * 10;
+            _fpsFocusedNumber.text = fps.ToString();
+            _currentSettings.fpsFocused = intValue;
             
-            Application.targetFrameRate = _currentSettings.fpsFocused;
+            Application.targetFrameRate = fps;
+            Save();
         }
         
         private void OnFPSUnFocusedChanged(float value)
         {
-            _fpsUnfocusedNumber.text = value.ToString();
-            _currentSettings.fpsUnFocused = (int)value;
+            int intValue = (int)value;
+            int fps = intValue * 10;
+            _fpsUnfocusedNumber.text = fps.ToString();
+            _currentSettings.fpsUnFocused = intValue;
+            
+            Save();
         }
 
         private void OnApplicationFocusChanged(bool hasFocus)
         {
-            Application.targetFrameRate = hasFocus ? _currentSettings.fpsFocused : _currentSettings.fpsUnFocused;
+            Application.targetFrameRate = (hasFocus ? _currentSettings.fpsFocused : _currentSettings.fpsUnFocused) * 10;
         }
 
         private void Save()
@@ -308,8 +314,8 @@ namespace TodoBoard
         {
             public string language;
             public bool alwaysOnTop = true;
-            public int fpsFocused = 30;
-            public int fpsUnFocused = 10;
+            public int fpsFocused = 5;
+            public int fpsUnFocused = 1;
             public string inputOverride = "";
             public float clickVolume = 10f;
             public float pomodoroAlarm = 10f;

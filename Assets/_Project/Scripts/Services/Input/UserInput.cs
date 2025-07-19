@@ -90,7 +90,7 @@ namespace TodoBoard
     ""name"": ""Controls"",
     ""maps"": [
         {
-            ""name"": ""UI"",
+            ""name"": ""MenuUI"",
             ""id"": ""97e7cda3-42a9-459b-8164-4b1a022b999b"",
             ""actions"": [
                 {
@@ -140,15 +140,15 @@ namespace TodoBoard
     ],
     ""controlSchemes"": []
 }");
-            // UI
-            m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
-            m_UI_ToggleAlwaysOnTop = m_UI.FindAction("ToggleAlwaysOnTop", throwIfNotFound: true);
-            m_UI_HideAllPanels = m_UI.FindAction("HideAllPanels", throwIfNotFound: true);
+            // MenuUI
+            m_MenuUI = asset.FindActionMap("MenuUI", throwIfNotFound: true);
+            m_MenuUI_ToggleAlwaysOnTop = m_MenuUI.FindAction("ToggleAlwaysOnTop", throwIfNotFound: true);
+            m_MenuUI_HideAllPanels = m_MenuUI.FindAction("HideAllPanels", throwIfNotFound: true);
         }
 
         ~@UserInput()
         {
-            UnityEngine.Debug.Assert(!m_UI.enabled, "This will cause a leak and performance issues, UserInput.UI.Disable() has not been called.");
+            UnityEngine.Debug.Assert(!m_MenuUI.enabled, "This will cause a leak and performance issues, UserInput.MenuUI.Disable() has not been called.");
         }
 
         /// <summary>
@@ -221,34 +221,34 @@ namespace TodoBoard
             return asset.FindBinding(bindingMask, out action);
         }
 
-        // UI
-        private readonly InputActionMap m_UI;
-        private List<IUIActions> m_UIActionsCallbackInterfaces = new List<IUIActions>();
-        private readonly InputAction m_UI_ToggleAlwaysOnTop;
-        private readonly InputAction m_UI_HideAllPanels;
+        // MenuUI
+        private readonly InputActionMap m_MenuUI;
+        private List<IMenuUIActions> m_MenuUIActionsCallbackInterfaces = new List<IMenuUIActions>();
+        private readonly InputAction m_MenuUI_ToggleAlwaysOnTop;
+        private readonly InputAction m_MenuUI_HideAllPanels;
         /// <summary>
-        /// Provides access to input actions defined in input action map "UI".
+        /// Provides access to input actions defined in input action map "MenuUI".
         /// </summary>
-        public struct UIActions
+        public struct MenuUIActions
         {
             private @UserInput m_Wrapper;
 
             /// <summary>
             /// Construct a new instance of the input action map wrapper class.
             /// </summary>
-            public UIActions(@UserInput wrapper) { m_Wrapper = wrapper; }
+            public MenuUIActions(@UserInput wrapper) { m_Wrapper = wrapper; }
             /// <summary>
-            /// Provides access to the underlying input action "UI/ToggleAlwaysOnTop".
+            /// Provides access to the underlying input action "MenuUI/ToggleAlwaysOnTop".
             /// </summary>
-            public InputAction @ToggleAlwaysOnTop => m_Wrapper.m_UI_ToggleAlwaysOnTop;
+            public InputAction @ToggleAlwaysOnTop => m_Wrapper.m_MenuUI_ToggleAlwaysOnTop;
             /// <summary>
-            /// Provides access to the underlying input action "UI/HideAllPanels".
+            /// Provides access to the underlying input action "MenuUI/HideAllPanels".
             /// </summary>
-            public InputAction @HideAllPanels => m_Wrapper.m_UI_HideAllPanels;
+            public InputAction @HideAllPanels => m_Wrapper.m_MenuUI_HideAllPanels;
             /// <summary>
             /// Provides access to the underlying input action map instance.
             /// </summary>
-            public InputActionMap Get() { return m_Wrapper.m_UI; }
+            public InputActionMap Get() { return m_Wrapper.m_MenuUI; }
             /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
             public void Enable() { Get().Enable(); }
             /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
@@ -256,9 +256,9 @@ namespace TodoBoard
             /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.enabled" />
             public bool enabled => Get().enabled;
             /// <summary>
-            /// Implicitly converts an <see ref="UIActions" /> to an <see ref="InputActionMap" /> instance.
+            /// Implicitly converts an <see ref="MenuUIActions" /> to an <see ref="InputActionMap" /> instance.
             /// </summary>
-            public static implicit operator InputActionMap(UIActions set) { return set.Get(); }
+            public static implicit operator InputActionMap(MenuUIActions set) { return set.Get(); }
             /// <summary>
             /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
             /// </summary>
@@ -266,11 +266,11 @@ namespace TodoBoard
             /// <remarks>
             /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
             /// </remarks>
-            /// <seealso cref="UIActions" />
-            public void AddCallbacks(IUIActions instance)
+            /// <seealso cref="MenuUIActions" />
+            public void AddCallbacks(IMenuUIActions instance)
             {
-                if (instance == null || m_Wrapper.m_UIActionsCallbackInterfaces.Contains(instance)) return;
-                m_Wrapper.m_UIActionsCallbackInterfaces.Add(instance);
+                if (instance == null || m_Wrapper.m_MenuUIActionsCallbackInterfaces.Contains(instance)) return;
+                m_Wrapper.m_MenuUIActionsCallbackInterfaces.Add(instance);
                 @ToggleAlwaysOnTop.started += instance.OnToggleAlwaysOnTop;
                 @ToggleAlwaysOnTop.performed += instance.OnToggleAlwaysOnTop;
                 @ToggleAlwaysOnTop.canceled += instance.OnToggleAlwaysOnTop;
@@ -285,8 +285,8 @@ namespace TodoBoard
             /// <remarks>
             /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
             /// </remarks>
-            /// <seealso cref="UIActions" />
-            private void UnregisterCallbacks(IUIActions instance)
+            /// <seealso cref="MenuUIActions" />
+            private void UnregisterCallbacks(IMenuUIActions instance)
             {
                 @ToggleAlwaysOnTop.started -= instance.OnToggleAlwaysOnTop;
                 @ToggleAlwaysOnTop.performed -= instance.OnToggleAlwaysOnTop;
@@ -297,12 +297,12 @@ namespace TodoBoard
             }
 
             /// <summary>
-            /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="UIActions.UnregisterCallbacks(IUIActions)" />.
+            /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="MenuUIActions.UnregisterCallbacks(IMenuUIActions)" />.
             /// </summary>
-            /// <seealso cref="UIActions.UnregisterCallbacks(IUIActions)" />
-            public void RemoveCallbacks(IUIActions instance)
+            /// <seealso cref="MenuUIActions.UnregisterCallbacks(IMenuUIActions)" />
+            public void RemoveCallbacks(IMenuUIActions instance)
             {
-                if (m_Wrapper.m_UIActionsCallbackInterfaces.Remove(instance))
+                if (m_Wrapper.m_MenuUIActionsCallbackInterfaces.Remove(instance))
                     UnregisterCallbacks(instance);
             }
 
@@ -312,27 +312,27 @@ namespace TodoBoard
             /// <remarks>
             /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
             /// </remarks>
-            /// <seealso cref="UIActions.AddCallbacks(IUIActions)" />
-            /// <seealso cref="UIActions.RemoveCallbacks(IUIActions)" />
-            /// <seealso cref="UIActions.UnregisterCallbacks(IUIActions)" />
-            public void SetCallbacks(IUIActions instance)
+            /// <seealso cref="MenuUIActions.AddCallbacks(IMenuUIActions)" />
+            /// <seealso cref="MenuUIActions.RemoveCallbacks(IMenuUIActions)" />
+            /// <seealso cref="MenuUIActions.UnregisterCallbacks(IMenuUIActions)" />
+            public void SetCallbacks(IMenuUIActions instance)
             {
-                foreach (var item in m_Wrapper.m_UIActionsCallbackInterfaces)
+                foreach (var item in m_Wrapper.m_MenuUIActionsCallbackInterfaces)
                     UnregisterCallbacks(item);
-                m_Wrapper.m_UIActionsCallbackInterfaces.Clear();
+                m_Wrapper.m_MenuUIActionsCallbackInterfaces.Clear();
                 AddCallbacks(instance);
             }
         }
         /// <summary>
-        /// Provides a new <see cref="UIActions" /> instance referencing this action map.
+        /// Provides a new <see cref="MenuUIActions" /> instance referencing this action map.
         /// </summary>
-        public UIActions @UI => new UIActions(this);
+        public MenuUIActions @MenuUI => new MenuUIActions(this);
         /// <summary>
-        /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "UI" which allows adding and removing callbacks.
+        /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "MenuUI" which allows adding and removing callbacks.
         /// </summary>
-        /// <seealso cref="UIActions.AddCallbacks(IUIActions)" />
-        /// <seealso cref="UIActions.RemoveCallbacks(IUIActions)" />
-        public interface IUIActions
+        /// <seealso cref="MenuUIActions.AddCallbacks(IMenuUIActions)" />
+        /// <seealso cref="MenuUIActions.RemoveCallbacks(IMenuUIActions)" />
+        public interface IMenuUIActions
         {
             /// <summary>
             /// Method invoked when associated input action "ToggleAlwaysOnTop" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
