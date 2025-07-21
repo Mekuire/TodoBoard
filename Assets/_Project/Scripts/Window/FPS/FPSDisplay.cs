@@ -5,15 +5,13 @@ using UnityEngine.UI;
 public class FPSDisplay : MonoBehaviour
 {
     [Header("Settings")]
-    [SerializeField] private float _updateInterval = 0.5f; // Как часто обновлять FPS (в секундах)
-    [SerializeField] private bool _showAverageFPS = true; // Показывать средний FPS
-    [SerializeField] private bool _showMinFPS = true;     // Показывать минимальный FPS
-    [SerializeField] private bool _showMaxFPS = true;      // Показывать максимальный FPS
+    [SerializeField] private float _updateInterval = 0.5f; 
+    [SerializeField] private bool _showMinFPS = true;     
+    [SerializeField] private bool _showMaxFPS = true;    
 
     [Header("UI Elements")]
-    [SerializeField] private TextMeshProUGUI _fpsText; // Ссылка на UI Text (если null - будет создан автоматически)
+    [SerializeField] private TextMeshProUGUI _fpsText;
 
-    // Приватные переменные
     private float _fps;
     private float _minFps = float.MaxValue;
     private float _maxFps = float.MinValue;
@@ -28,16 +26,13 @@ public class FPSDisplay : MonoBehaviour
 
     private void Update()
     {
-        // Вычисляем текущий FPS
         float currentFps = 1.0f / Time.unscaledDeltaTime;
         _accumulatedFps += currentFps;
         _frameCount++;
 
-        // Обновляем мин./макс. FPS
         if (currentFps < _minFps) _minFps = currentFps;
         if (currentFps > _maxFps) _maxFps = currentFps;
 
-        // Обновляем текст с заданным интервалом
         _timeLeft -= Time.unscaledDeltaTime;
         if (_timeLeft <= 0.0f)
         {
