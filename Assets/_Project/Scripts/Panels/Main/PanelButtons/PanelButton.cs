@@ -27,14 +27,8 @@ namespace TodoBoard
 
         private void TogglePanel()
         {
-            if (_panel.IsActive)
-            {
-                _panel.Hide();
-            }
-            else
-            {
-                _panel.Show();
-            }
+            if (_panel.IsActive) _panel.Hide();
+            else _panel.Show();
         }
     }
 }

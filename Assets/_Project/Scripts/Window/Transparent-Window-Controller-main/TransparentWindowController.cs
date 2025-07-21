@@ -6,11 +6,10 @@ using UnityEngine.XR;
 
 namespace Desdinova
 {
-    public class TransparentWindowController : MonoBehaviour, TransparentWindowController.IWindowController
+    public class TransparentWindowController : MonoBehaviour, IWindowController
     {
         [Range(0, 255)]
         public int WindowOpacity = 255;
-
 
         [DllImport("user32.dll")]
         static extern IntPtr GetActiveWindow();
@@ -44,9 +43,7 @@ namespace Desdinova
         private const uint SWP_NOZORDER = 0x0004;
         private const uint SWP_NOACTIVATE = 0x0010;
         private const uint SWP_SHOWWINDOW = 0x0040;
-
-
-
+        
         private void Awake()
         {
             if (!Application.isEditor)
@@ -59,8 +56,6 @@ namespace Desdinova
 
             }
         }
-
-
 
         public void SetAlwaysOnTop(bool enable)
         {
@@ -76,8 +71,6 @@ namespace Desdinova
                 Debug.Log("SetAlwaysOnTop run only in the Windows build.");
             }
         }
-
-
 
         public void SetOpacity(int opacity)
         {
@@ -112,8 +105,6 @@ namespace Desdinova
             }
         }
 
-
-
         public void ChangeMonitor()
         {
             if (!Application.isEditor)
@@ -143,14 +134,6 @@ namespace Desdinova
         public void ExitApplication()
         {
             Application.Quit();
-        }
-
-        public interface IWindowController
-        {
-            public void ChangeMonitor();
-            public void SetTransparent(bool enable);
-            public void SetOpacity(int opacity);
-            public void SetAlwaysOnTop(bool enable);
         }
     }
 }

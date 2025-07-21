@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using Desdinova;
 using TMPro;
@@ -37,20 +36,20 @@ namespace TodoBoard
         [Header("Data")] 
         [SerializeField] private bool _saveDataInEditor = true;
 
-        private Settings _currentSettings;
+        private SettingsData _currentSettingsData;
         private List<Locale> _locales;
         private UserInput _userInput;
         private InputActionRebindingExtensions.RebindingOperation _rebindingOperation;
         
-        private TransparentWindowController.IWindowController _windowController;
+        private IWindowController _windowController;
         
-        public void Initialize(ISaveLoadService saveLoadService, TransparentWindowController.IWindowController windowController, UserInput input)
+        public void Initialize(ISaveLoadService saveLoadService, IWindowController windowController, UserInput input)
         {
             _saveLoadService = saveLoadService;
             _windowController = windowController;
             _userInput = input;
             
-            _currentSettings = _saveLoadService.LoadData<Settings>(DATA_KEY) ?? new Settings()
+            _currentSettingsData = _saveLoadService.LoadData<SettingsData>(DATA_KEY) ?? new SettingsData()
             {
                 language = LocalizationSettings.SelectedLocale.LocaleName
             };
@@ -115,7 +114,7 @@ namespace TodoBoard
                 options.Add(locale.LocaleName);
             }
 
-            int selectedIndex = _locales.FindIndex(l => l.LocaleName == _currentSettings.language);
+            int selectedIndex = _locales.FindIndex(l => l.LocaleName == _currentSettingsData.language);
 
             if (selectedIndex == -1)
                 selectedIndex = _locales.IndexOf(LocalizationSettings.SelectedLocale);
@@ -135,11 +134,11 @@ namespace TodoBoard
             _userInput.MenuUI.ToggleAlwaysOnTop.performed += ToggleAlwaysOnTopOnPerformed;
             _alwaysOnTopToggle.onValueChanged.AddListener(AlwaysOnTopChanged);
 
-            _alwaysOnTopToggle.SetIsOnWithoutNotify(_currentSettings.alwaysOnTop);
+            _alwaysOnTopToggle.SetIsOnWithoutNotify(_currentSettingsData.alwaysOnTop);
             ChangeAlwaysOnTop();
             
-            OnFPSFocusedChanged(_currentSettings.fpsFocused);
-            OnFPSUnFocusedChanged(_currentSettings.fpsUnFocused);
+            OnFPSFocusedChanged(_currentSettingsData.fpsFocused);
+            OnFPSUnFocusedChanged(_currentSettingsData.fpsUnFocused);
             
             QualitySettings.vSyncCount = 0;
             OnApplicationFocusChanged(Application.isFocused);
@@ -147,15 +146,15 @@ namespace TodoBoard
 
         private void ToggleAlwaysOnTopOnPerformed(InputAction.CallbackContext obj)
         {
-            _currentSettings.alwaysOnTop = !_currentSettings.alwaysOnTop;
-            _alwaysOnTopToggle.isOn = _currentSettings.alwaysOnTop;
+            _currentSettingsData.alwaysOnTop = !_currentSettingsData.alwaysOnTop;
+            _alwaysOnTopToggle.isOn = _currentSettingsData.alwaysOnTop;
         }
 
         private void SetupInputSettings()
         {
-            if (!string.IsNullOrEmpty(_currentSettings.inputOverride))
+            if (!string.IsNullOrEmpty(_currentSettingsData.inputOverride))
             {
-                _userInput.LoadBindingOverridesFromJson(_currentSettings.inputOverride);
+                _userInput.LoadBindingOverridesFromJson(_currentSettingsData.inputOverride);
             }
             
             UpdateBindingDisplay(_userInput.MenuUI.HideAllPanels, _hideAllPanelsText);
@@ -164,13 +163,13 @@ namespace TodoBoard
 
         private void SetupAudioSettings()
         {
-            _clickVolumeSlider.value = _currentSettings.clickVolume;
-            _pomodoroAlarmSlider.value = _currentSettings.pomodoroAlarm;
+            _clickVolumeSlider.value = _currentSettingsData.clickVolume;
+            _pomodoroAlarmSlider.value = _currentSettingsData.pomodoroAlarm;
         }
 
         private void AlwaysOnTopChanged(bool value)
         {
-            _currentSettings.alwaysOnTop = value;
+            _currentSettingsData.alwaysOnTop = value;
 
             ChangeAlwaysOnTop();
 
@@ -179,14 +178,14 @@ namespace TodoBoard
 
         private void ChangeAlwaysOnTop()
         {
-            _windowController.SetAlwaysOnTop(_currentSettings.alwaysOnTop);
+            _windowController.SetAlwaysOnTop(_currentSettingsData.alwaysOnTop);
         }
 
         private void OnLanguageChanged(int index)
         {
             var locale = _locales[index];
             LocalizationSettings.SelectedLocale = locale;
-            _currentSettings.language = locale.LocaleName;
+            _currentSettingsData.language = locale.LocaleName;
 
             Save();
         }
@@ -268,7 +267,7 @@ namespace TodoBoard
         private void SaveBindingOverrides()
         {
             string inputOverrides = _userInput.SaveBindingOverridesAsJson();
-            _currentSettings.inputOverride = inputOverrides;
+            _currentSettingsData.inputOverride = inputOverrides;
             Save();
         }
 
@@ -277,7 +276,7 @@ namespace TodoBoard
             int intValue = (int)value;
             int fps = intValue * 10;
             _fpsFocusedNumber.text = fps.ToString();
-            _currentSettings.fpsFocused = intValue;
+            _currentSettingsData.fpsFocused = intValue;
             
             Application.targetFrameRate = fps;
             Save();
@@ -288,14 +287,14 @@ namespace TodoBoard
             int intValue = (int)value;
             int fps = intValue * 10;
             _fpsUnfocusedNumber.text = fps.ToString();
-            _currentSettings.fpsUnFocused = intValue;
+            _currentSettingsData.fpsUnFocused = intValue;
             
             Save();
         }
 
         private void OnApplicationFocusChanged(bool hasFocus)
         {
-            Application.targetFrameRate = (hasFocus ? _currentSettings.fpsFocused : _currentSettings.fpsUnFocused) * 10;
+            Application.targetFrameRate = (hasFocus ? _currentSettingsData.fpsFocused : _currentSettingsData.fpsUnFocused) * 10;
         }
 
         private void Save()
@@ -303,22 +302,10 @@ namespace TodoBoard
 #if UNITY_EDITOR
             if (_saveDataInEditor == false) return;
 #endif
-            if (_currentSettings != null)
+            if (_currentSettingsData != null)
             {
-                _saveLoadService.SaveData(_currentSettings, DATA_KEY);
+                _saveLoadService.SaveData(_currentSettingsData, DATA_KEY);
             }
-        }
-        
-        [Serializable]
-        public class Settings
-        {
-            public string language;
-            public bool alwaysOnTop = true;
-            public int fpsFocused = 5;
-            public int fpsUnFocused = 1;
-            public string inputOverride = "";
-            public float clickVolume = 10f;
-            public float pomodoroAlarm = 10f;
         }
     }
 }

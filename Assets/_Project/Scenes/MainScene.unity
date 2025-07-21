@@ -288,6 +288,7 @@ MonoBehaviour:
   _uiElement: {fileID: 807253029}
   minSize: {x: 300, y: 300}
   maxSize: {x: 630, y: 700}
+  _pivot: {x: 0, y: 1}
 --- !u!1 &14544251
 GameObject:
   m_ObjectHideFlags: 0
@@ -5312,7 +5313,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 984f36035fc80da45bb6a156c63e1bd5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _hideOnOutsideClick: 0
   _editListButton: {fileID: 1595428995}
   _addTaskButton: {fileID: 1158579855}
   _listButtonPrefab: {fileID: 6841960447083495030, guid: a13d6db382bbfc0428d5554a6da92723, type: 3}
@@ -6581,7 +6581,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -83, y: 106}
+  m_AnchoredPosition: {x: -63, y: 106}
   m_SizeDelta: {x: 78.57, y: 85}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1091356851
@@ -10135,7 +10135,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a9cd44b76cc663b468095534bb2bb7c0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _hideOnOutsideClick: 1
   _languageDropdown: {fileID: 1952515198}
   _alwaysOnTopToggle: {fileID: 2087909042}
   _fpsFocusedSlider: {fileID: 571199285}
@@ -10727,7 +10726,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _uiElement: {fileID: 807253029}
-  _pivot: {x: 0, y: 1}
 --- !u!114 &1637763960
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13913,7 +13911,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a4246a0adeeef54faada00b4cec6ef4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _hideOnOutsideClick: 1
   _habitPrefab: {fileID: 7014308578992305725, guid: 4e97032416a3f454092d65dd6a23f04f, type: 3}
   _habitsScrollView: {fileID: 1462912402}
   _addButton: {fileID: 182601448}

@@ -10,11 +10,11 @@ namespace TodoBoard
         [SerializeField] private TMP_InputField _inputField;
         [SerializeField] private Button _deleteListButton;
         
-        private ToDoPanel.TaskListData _taskListData;
-        private ToDoPanel.IListDeleter _deleter;
+        private TaskListData _taskListData;
+        private IListDeleter _deleter;
         private IDataUpdater _dataUpdater;
         
-        public void Initialize(ToDoPanel.TaskListData taskListData, ToDoPanel.IListDeleter deleter, IDataUpdater dataUpdater)
+        public void Initialize(TaskListData taskListData, IListDeleter deleter, IDataUpdater dataUpdater)
         {
             _dataUpdater = dataUpdater;
             _deleter = deleter;

@@ -1,11 +1,10 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace TodoBoard
 {
-    public class HabitsPanel : Panel, IDataUpdater, HabitsPanel.IHabitDeleter
+    public class HabitsPanel : Panel, IDataUpdater, IHabitDeleter
     {
         private const string DATA_KEY = "habits";
 
@@ -124,31 +123,6 @@ namespace TodoBoard
             {
                 _saveLoadService.SaveData(_currentData, DATA_KEY);
             }
-        }
-
-        public interface IHabitDeleter
-        {
-            public void DeleteHabit(HabitData habitData, GameObject habitObject);
-        }
-        
-        [Serializable]
-        public class HabitsData
-        {
-            public List<HabitData> Habits = new();
-        }
-
-        [Serializable]
-        public class HabitData
-        {
-            public string Name = "My new habit...";
-            public string Id = Guid.NewGuid().ToString();
-            public bool Monday = false;
-            public bool Tuesday = false;
-            public bool Wednesday = false;
-            public bool Thursday = false;
-            public bool Friday = false;
-            public bool Saturday = false;
-            public bool Sunday = false;
         }
     }
 }

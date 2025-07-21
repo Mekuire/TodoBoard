@@ -17,11 +17,11 @@ namespace TodoBoard
         [SerializeField] private Toggle _toggleSunday;
         [SerializeField] private PointerEvents _pointerEventsObject;
         
-        private HabitsPanel.HabitData _habitData;
-        private HabitsPanel.IHabitDeleter _deleter;
+        private HabitData _habitData;
+        private IHabitDeleter _deleter;
         private IDataUpdater  _dataUpdater;
         
-        public void Initialize(HabitsPanel.HabitData habitData, HabitsPanel.IHabitDeleter deleter, IDataUpdater  dataUpdater)
+        public void Initialize(HabitData habitData, IHabitDeleter deleter, IDataUpdater  dataUpdater)
         {
             _dataUpdater = dataUpdater;
             _deleter = deleter;
@@ -132,12 +132,12 @@ namespace TodoBoard
             _toggleSunday.onValueChanged.RemoveListener(OnSundayToggleChanged);
         }
 
-        public void OnPointerEnter()
+        private void OnPointerEnter()
         {
             _deleteHabitButton.gameObject.SetActive(true);
         }
 
-        public void OnPointerExit()
+        private void OnPointerExit()
         {
             _deleteHabitButton.gameObject.SetActive(false);
         }

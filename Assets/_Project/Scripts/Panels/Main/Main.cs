@@ -79,14 +79,8 @@ namespace TodoBoard
         {
             if (!_slideObject) return;
 
-            if (_listExpanded)
-            {
-                _slideObject.Collapse(() => _listExpanded = false);
-            }
-            else
-            {
-                _slideObject.Expand(() => _listExpanded = true);
-            }
+            if (_listExpanded) _slideObject.Collapse(() => _listExpanded = false);
+            else _slideObject.Expand(() => _listExpanded = true);
         }
     }
 }

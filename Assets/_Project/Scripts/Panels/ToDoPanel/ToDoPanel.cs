@@ -1,14 +1,11 @@
-using System;
 using System.Collections.Generic;
-using System.Data;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using Button = UnityEngine.UI.Button;
 
 namespace TodoBoard
 {
-    public class ToDoPanel : Panel, ToDoPanel.ITaskDeleter, ToDoPanel.IListDeleter, ToDoPanel.IListOpener, IDataUpdater
+    public class ToDoPanel : Panel, ITaskDeleter, IListDeleter, IListOpener, IDataUpdater
     {
         private const string DATA_KEY = "todo-list";
 
@@ -37,9 +34,9 @@ namespace TodoBoard
         public void Initialize(ISaveLoadService saveLoadService)
         {
             _saveLoadService = saveLoadService;
-            
+
             Setup();
-            
+
             Hide();
         }
 
@@ -53,6 +50,7 @@ namespace TodoBoard
             ToggleListEditMenu(false);
             ToggleTasksMenu(true);
 
+            ClearTasksPanel();
             SetupToDoList(_currentData, _currentListId);
 
             PreventAddingExtraList();
@@ -90,6 +88,7 @@ namespace TodoBoard
             {
                 Tasks = new List<TaskData> { new TaskData() }
             };
+
             _currentData.TaskLists.Add(taskList);
             CreateListObject(taskList);
 
@@ -100,20 +99,15 @@ namespace TodoBoard
 
         private void PreventAddingExtraList()
         {
-            if (_currentData.TaskLists.Count >= MaxLists)
-            {
-                _addListButton.interactable = false;
-            }
-            else
-            {
-                _addListButton.interactable = true;
-            }
+            _addListButton.interactable = _currentData.TaskLists.Count < MaxLists;
         }
 
         private void OnEditLists()
         {
             ToggleTasksMenu(false);
             ToggleListEditMenu(true);
+
+            ClearListsPanel();
             SetupListsEditMenu(_currentData);
 
             Save();
@@ -121,16 +115,22 @@ namespace TodoBoard
 
         private void OnConfirmLists()
         {
-            TaskListData taskList = _currentData.TaskLists.Find(l => l.Id == _currentListId);
-            if (taskList == null)
+            TaskListData currentTaskList = _currentData.TaskLists.Find(l => l.Id == _currentListId);
+
+            if (currentTaskList == null)
             {
-                taskList = _currentData.TaskLists[0];
-                _currentListId = taskList.Id;
+                currentTaskList = _currentData.TaskLists[0];
+                _currentListId = currentTaskList.Id;
+
+                DestroyChildObjects(_scrollView.content);
+                SetupTasks(currentTaskList);
             }
 
-            ToggleTasksMenu(true);
             ToggleListEditMenu(false);
-            SetupToDoList(_currentData, _currentListId);
+            ToggleTasksMenu(true);
+
+            DestroyChildObjects(_listButtonsParent);
+            SetupListButtons(_currentData);
 
             Save();
         }
@@ -169,55 +169,49 @@ namespace TodoBoard
 
         private void SetupToDoList(ToDoData data, string id)
         {
-            ClearTasksPanel();
-
             foreach (TaskListData list in data.TaskLists)
             {
                 CreateListButton(list);
 
                 if (list.Id != id) continue;
 
-                foreach (TaskData taskData in list.Tasks)
-                {
-                    TaskItem taskItem = Instantiate(taskItemPrefab, _scrollView.content);
-                    taskItem.Initialize(taskData, deleter: this, dataUpdater: this);
-                }
+                SetupTasks(list);
+            }
+        }
+
+        private void SetupListButtons(ToDoData data)
+        {
+            foreach (TaskListData list in data.TaskLists)
+            {
+                CreateListButton(list);
             }
         }
 
         private void SetupTasks(TaskListData taskList)
         {
-            DestroyChildObjects(_scrollView.content);
-
             foreach (TaskData taskData in taskList.Tasks)
             {
-                TaskItem taskItem = Instantiate(taskItemPrefab, _scrollView.content);
-                taskItem.Initialize(taskData, deleter: this, dataUpdater: this);
+                CreateTaskObject(taskData);
             }
         }
 
         private void SetupListsEditMenu(ToDoData data)
         {
-            ClearListsPanel();
-
             foreach (TaskListData listData in data.TaskLists)
             {
-                ListItem listItem = Instantiate(listItemPrefab, _listScrollView.content);
-                listItem.Initialize(listData, deleter: this, dataUpdater: this);
+                CreateListObject(listData);
             }
         }
 
         private void CreateTaskObject(TaskData data)
         {
             TaskItem taskItem = Instantiate(taskItemPrefab, _scrollView.content);
-
             taskItem.Initialize(data, deleter: this, dataUpdater: this);
         }
 
         private void CreateListObject(TaskListData taskList)
         {
             ListItem listItem = Instantiate(listItemPrefab, _listScrollView.content);
-
             listItem.Initialize(taskList, deleter: this, dataUpdater: this);
         }
 
@@ -237,7 +231,7 @@ namespace TodoBoard
         {
             DestroyChildObjects(_listScrollView.content);
         }
-        
+
         private void Save()
         {
 #if UNITY_EDITOR
@@ -249,42 +243,6 @@ namespace TodoBoard
             }
         }
 
-        [Serializable]
-        public class ToDoData
-        {
-            public List<TaskListData> TaskLists;
-        }
-
-        [Serializable]
-        public class TaskListData
-        {
-            public string ListName = "My List";
-            public string Id = Guid.NewGuid().ToString();
-            public List<TaskData> Tasks;
-        }
-
-        [Serializable]
-        public class TaskData
-        {
-            public string Name = "My new task...";
-            public bool IsCompleted = false;
-        }
-
-        public interface ITaskDeleter
-        {
-            public void DeleteTask(TaskData taskData, GameObject task);
-        }
-
-        public interface IListDeleter
-        {
-            public void DeleteList(TaskListData taskList, GameObject list);
-        }
-
-        public interface IListOpener
-        {
-            public void OpenTaskList(TaskListData taskList);
-        }
-        
         public void DeleteTask(TaskData taskData, GameObject task)
         {
             TaskListData taskList = _currentData.TaskLists.Find(l => l.Id == _currentListId);
@@ -309,11 +267,6 @@ namespace TodoBoard
 
         public void DeleteList(TaskListData taskList, GameObject list)
         {
-            if (taskList.Id == _currentListId)
-            {
-                _currentListId = _currentData.TaskLists[0].Id;
-            }
-
             if (!_currentData.TaskLists.Contains(taskList))
             {
                 Debug.LogWarning("There is no such list to delete");
@@ -330,7 +283,10 @@ namespace TodoBoard
 
         public void OpenTaskList(TaskListData taskList)
         {
+            if (_currentListId == taskList.Id) return;
+
             _currentListId = taskList.Id;
+            DestroyChildObjects(_scrollView.content);
             SetupTasks(taskList);
         }
 

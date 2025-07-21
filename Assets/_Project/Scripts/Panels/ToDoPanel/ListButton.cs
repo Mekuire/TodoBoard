@@ -8,11 +8,11 @@ namespace TodoBoard
     public class ListButton : MonoBehaviour
     {
         private Button _button;
-        private ToDoPanel.TaskListData  _taskList;
+        private TaskListData  _taskList;
         private TextMeshProUGUI _label;
-        private ToDoPanel.IListOpener  _listOpener;
+        private IListOpener  _listOpener;
         
-        public void Initialize(ToDoPanel.TaskListData taskListData, ToDoPanel.IListOpener listOpener)
+        public void Initialize(TaskListData taskListData, IListOpener listOpener)
         {
             _listOpener = listOpener;
             _taskList = taskListData;
