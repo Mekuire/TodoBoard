@@ -59,6 +59,18 @@ MonoBehaviour:
     m_Key: settings.pressKey
     m_Metadata:
       m_Items: []
+  - m_Id: 7619618177019904
+    m_Key: settings.colors
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7620866208952320
+    m_Key: settings.bgColor
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7621326617702400
+    m_Key: settings.textColor
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

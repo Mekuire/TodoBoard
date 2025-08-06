@@ -62,6 +62,18 @@ MonoBehaviour:
     m_Localized: Press key...
     m_Metadata:
       m_Items: []
+  - m_Id: 7619618177019904
+    m_Localized: Colors
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7620866208952320
+    m_Localized: Background color
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7621326617702400
+    m_Localized: TextColor
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []
