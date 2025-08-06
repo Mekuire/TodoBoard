@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using Desdinova;
 using UnityEngine;
@@ -40,13 +39,13 @@ namespace TodoBoard
                 _settingsPanel
             };
         }
-
+        
         private void OnEnable()
         {
             _button.onClick.AddListener(SwitchListState);
             _userInput.MenuUI.HideAllPanels.performed += HideAllPanelsOnPerformed;
         }
-
+        
         private void HideAllPanelsOnPerformed(InputAction.CallbackContext obj)
         {
             foreach (Panel panel in _panels)
