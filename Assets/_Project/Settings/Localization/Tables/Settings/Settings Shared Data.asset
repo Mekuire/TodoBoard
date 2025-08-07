@@ -36,11 +36,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 1542405222400
-    m_Key: settings.fpsFocused
-    m_Metadata:
-      m_Items: []
-  - m_Id: 1581663907840
-    m_Key: settings.fpsUnFocused
+    m_Key: settings.fps
     m_Metadata:
       m_Items: []
   - m_Id: 2215708454912
@@ -69,6 +65,10 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 7621326617702400
     m_Key: settings.textColor
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7977522528776192
+    m_Key: settings.openColorPicker
     m_Metadata:
       m_Items: []
   m_Metadata:

@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 namespace TodoBoard
 {
-    public class ColourPickerController : MonoBehaviour
+    public class ColourPickerController : Panel
     {
         [SerializeField] private RawImage _h;
         [SerializeField] private RawImage _sv;
@@ -12,56 +12,59 @@ namespace TodoBoard
         [SerializeField] private Slider _hueSlider;
         [SerializeField] private SVPickControl _picker;
         [SerializeField] private Button _doneButton;
+        [SerializeField] private float _minV = 0.2f;
         
         private Texture2D _hTexture, _svTexture, _outTexture;
         private float _currentH, _currentS, _currentV;
 
-        public event Action<Color> OnColorSelectionDone;
+        public event Action<float, float, float> OnColorChanged;
+        public event Action<HSVColor> OnColorSelectionDone;
         
-        private void Awake()
+        public void Initialize()
         {
             CreateHTexture();
             CreateSVTexture();
             CreateOutTexture();
+            _picker.Initialize();
         }
-
-        private void Start()
-        {
-            SetColour(Color.white);
-        }
-
+        
         private void OnEnable()
         {
             _hueSlider.onValueChanged.AddListener(OnHueChanged);
             _doneButton.onClick.AddListener(OnDone);
-            _picker.OnValueChanged += OnValueChanged;
+            _picker.OnValueChanged += OnSVChanged;
         }
 
         private void OnDisable()
         {
             _hueSlider.onValueChanged.RemoveListener(OnHueChanged);
             _doneButton.onClick.RemoveListener(OnDone);
-            _picker.OnValueChanged -= OnValueChanged;
+            _picker.OnValueChanged -= OnSVChanged;
         }
 
-        public void SetColour(Color color)
+        public void SetColour(HSVColor color)
         {
             _picker.SetPickerPositionByColor(color);
-            Color.RGBToHSV(color, out _currentH, out _currentS, out _currentV);
+            _currentH = color.h;
+            _currentS = color.s;
+            _currentV = color.v;
+            _hueSlider.value = _currentH;
             UpdateSVTexture();
             UpdateOutTexture();
         }
         
         private void OnDone()
         {
-            OnColorSelectionDone?.Invoke(Color.HSVToRGB(_currentH, _currentS, _currentV));
+            OnColorSelectionDone?.Invoke(new HSVColor(_currentH, _currentS, _currentV));
         }
 
-        private void OnValueChanged(float arg1, float arg2)
+        private void OnSVChanged(float s, float v)
         {
-            _currentS = arg1;
-            _currentV = arg2;
+            v = Mathf.Lerp(_minV, 1f, v);
+            _currentS = s;
+            _currentV = v;
             UpdateOutTexture();
+            OnColorChanged?.Invoke(_currentH, _currentS, _currentV);
         }
 
         private void OnHueChanged(float value)
@@ -69,6 +72,7 @@ namespace TodoBoard
             _currentH = value;
             UpdateSVTexture();
             UpdateOutTexture();
+            OnColorChanged?.Invoke(_currentH, _currentS, _currentV);
         }
         
         private void CreateHTexture()
@@ -108,12 +112,15 @@ namespace TodoBoard
         {
             for (int i = 0; i < _svTexture.height; i++)
             {
+                float v = Mathf.Lerp(_minV, 1f, (float)i / (_svTexture.height - 1));
+
                 for (int j = 0; j < _svTexture.width; j++)
                 {
-                    _svTexture.SetPixel(j, i, Color.HSVToRGB(_currentH, (float)j / _svTexture.width, (float)i / _svTexture.height));
+                    float s = (float)j / (_svTexture.width - 1);
+                    _svTexture.SetPixel(j, i, Color.HSVToRGB(_currentH, s, v));
                 }
             }
-            
+
             _svTexture.Apply();
         }
 

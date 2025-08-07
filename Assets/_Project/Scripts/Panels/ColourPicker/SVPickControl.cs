@@ -13,21 +13,21 @@ namespace TodoBoard
 
         public Action<float, float> OnValueChanged;
         
-        private void Awake()
+        public void Initialize()
         {
             _boundsRect = GetComponent<RectTransform>();
         }
 
-        public void SetPickerPositionByColor(Color color)
+        public void SetPickerPositionByColor(HSVColor color)
         {
-            Color.RGBToHSV(color, out float h, out float s, out float v);
-            float x = s * _boundsRect.sizeDelta.x - _boundsRect.sizeDelta.x / 2;
-            float y = v * _boundsRect.sizeDelta.y - _boundsRect.sizeDelta.y / 2;
+            float x = color.s * _boundsRect.sizeDelta.x - _boundsRect.sizeDelta.x / 2;
+            float y = color.v * _boundsRect.sizeDelta.y - _boundsRect.sizeDelta.y / 2;
             _picker.localPosition = new Vector3(x, y, 0);
         }
         
         public void OnDrag(PointerEventData eventData)
         {
+            Debug.Log("Drag");
             UpdateColor(eventData);
         }
 
