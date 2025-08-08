@@ -27,7 +27,6 @@ namespace TodoBoard
         
         public void OnDrag(PointerEventData eventData)
         {
-            Debug.Log("Drag");
             UpdateColor(eventData);
         }
 
@@ -42,18 +41,18 @@ namespace TodoBoard
             Vector3 pos = _boundsRect.InverseTransformPoint(eventData.position);
             
             // half size of bound rect
-            float deltaX = _boundsRect.sizeDelta.x * 0.5f;
-            float deltaY = _boundsRect.sizeDelta.y * 0.5f;
+            float halfSizeX = _boundsRect.sizeDelta.x * 0.5f;
+            float halfSizeY = _boundsRect.sizeDelta.y * 0.5f;
             
             // clamping in bounds between sides (anchor needs to be center)
-            pos.x = Mathf.Clamp(pos.x, -deltaX, deltaX);
-            pos.y = Mathf.Clamp(pos.y, -deltaY, deltaY);
+            pos.x = Mathf.Clamp(pos.x, -halfSizeX, halfSizeX);
+            pos.y = Mathf.Clamp(pos.y, -halfSizeY, halfSizeY);
             
             _picker.localPosition = pos;
             
             // prevent from -position: (-127, 127) converts to (0, 254)
-            float x = pos.x + deltaX;
-            float y = pos.y + deltaY;
+            float x = pos.x + halfSizeX;
+            float y = pos.y + halfSizeY;
             
             // 150 / 254 = normalized value
             float xNormalized = x / _boundsRect.sizeDelta.x;

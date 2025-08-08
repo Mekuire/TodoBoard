@@ -19,8 +19,6 @@ namespace TodoBoard
         [SerializeField] private Toggle _alwaysOnTopToggle;
         [SerializeField] private Slider _fpsFocusedSlider;
         [SerializeField] private TextMeshProUGUI _fpsFocusedNumber;
-        //[SerializeField] private Slider _fpsUnfocusedSlider;
-        //[SerializeField] private TextMeshProUGUI _fpsUnfocusedNumber;
         [Header("Colors")]
         [SerializeField] private Material _uiMaterial;
         [SerializeField] private Button _changeBgColorButton;
@@ -74,7 +72,6 @@ namespace TodoBoard
             _languageDropdown.onValueChanged.AddListener(OnLanguageChanged);
             
             _fpsFocusedSlider.onValueChanged.AddListener(OnFPSFocusedChanged);
-            //_fpsUnfocusedSlider.onValueChanged.AddListener(OnFPSUnFocusedChanged);
             
             _toggleAlwaysOnTopButton.onClick.AddListener(OnToggleAlwaysOnTopPressed);
             _toggleAlwaysOnTopRestoreButton.onClick.AddListener(OnRestoreToggleAlwaysOnTopPressed);
@@ -92,7 +89,6 @@ namespace TodoBoard
             _languageDropdown.onValueChanged.RemoveListener(OnLanguageChanged);
             
             _fpsFocusedSlider.onValueChanged.RemoveListener(OnFPSFocusedChanged);
-            //_fpsUnfocusedSlider.onValueChanged.RemoveListener(OnFPSUnFocusedChanged);
             
             _toggleAlwaysOnTopButton.onClick.RemoveListener(OnToggleAlwaysOnTopPressed);
             _toggleAlwaysOnTopRestoreButton.onClick.RemoveListener(OnRestoreToggleAlwaysOnTopPressed);
@@ -104,7 +100,7 @@ namespace TodoBoard
             
             _changeBgColorButton.onClick.RemoveListener(OnChangeBgColorPressed);
 
-            Save();
+            //Save();
         }
 
         private void OnDestroy()
@@ -148,7 +144,7 @@ namespace TodoBoard
             _alwaysOnTopToggle.SetIsOnWithoutNotify(_currentSettingsData.alwaysOnTop);
             ChangeAlwaysOnTop();
             
-            OnFPSFocusedChanged(_currentSettingsData.fpsFocused);
+            SetFPS(_currentSettingsData.fpsFocused);
             
             QualitySettings.vSyncCount = 0;
             OnApplicationFocusChanged(Application.isFocused);
@@ -235,6 +231,8 @@ namespace TodoBoard
             
             _colourPickerController.OnColorSelectionDone -= ColourPicker_OnBgColorSelectionDone;
             _colourPickerController.OnColorChanged -= ColourPickerController_OnColorChanged;
+            
+            Save();
         }
         
         private void OnClickVolumeChanged(float value)
@@ -320,15 +318,20 @@ namespace TodoBoard
 
         private void OnFPSFocusedChanged(float value)
         {
+            SetFPS(value);
+            Save();
+        }
+
+        private void SetFPS(float value)
+        {
             int intValue = (int)value;
             int fps = intValue * 10;
             _fpsFocusedNumber.text = fps.ToString();
             _currentSettingsData.fpsFocused = intValue;
             
             Application.targetFrameRate = fps;
-            Save();
         }
-        
+
         private void OnApplicationFocusChanged(bool hasFocus)
         {
             Application.targetFrameRate = (hasFocus ? _currentSettingsData.fpsFocused * 10 : _currentSettingsData.fpsUnFocused);
