@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using Desdinova;
 using UnityEngine;
@@ -15,6 +14,7 @@ namespace TodoBoard
         [SerializeField] private ToDoPanel _toDoPanel;
         [SerializeField] private HabitsPanel _habitsPanel;
         [SerializeField] private SettingsPanel _settingsPanel;
+        [SerializeField] private ColourPickerController _colourPickerController;
         [Space]
         [SerializeField] private TransparentWindowController _windowController;
         
@@ -29,9 +29,10 @@ namespace TodoBoard
             _userInput = new UserInput();
             _userInput.Enable();
             
+            _colourPickerController.Initialize();
             _toDoPanel.Initialize(this);
             _habitsPanel.Initialize(this);
-            _settingsPanel.Initialize(this, _windowController, _userInput);
+            _settingsPanel.Initialize(this, _windowController, _colourPickerController, _userInput);
 
             _panels = new List<Panel>()
             {
@@ -40,13 +41,13 @@ namespace TodoBoard
                 _settingsPanel
             };
         }
-
+        
         private void OnEnable()
         {
             _button.onClick.AddListener(SwitchListState);
             _userInput.MenuUI.HideAllPanels.performed += HideAllPanelsOnPerformed;
         }
-
+        
         private void HideAllPanelsOnPerformed(InputAction.CallbackContext obj)
         {
             foreach (Panel panel in _panels)

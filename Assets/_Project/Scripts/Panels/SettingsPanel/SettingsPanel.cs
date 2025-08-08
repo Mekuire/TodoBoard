@@ -19,8 +19,9 @@ namespace TodoBoard
         [SerializeField] private Toggle _alwaysOnTopToggle;
         [SerializeField] private Slider _fpsFocusedSlider;
         [SerializeField] private TextMeshProUGUI _fpsFocusedNumber;
-        [SerializeField] private Slider _fpsUnfocusedSlider;
-        [SerializeField] private TextMeshProUGUI _fpsUnfocusedNumber;
+        [Header("Colors")]
+        [SerializeField] private Material _uiMaterial;
+        [SerializeField] private Button _changeBgColorButton;
         [Header("Shortcuts")] 
         [SerializeField] private Button _toggleAlwaysOnTopButton;
         [SerializeField] private TextMeshProUGUI _toggleAlwaysOnTopText;
@@ -40,14 +41,17 @@ namespace TodoBoard
         private List<Locale> _locales;
         private UserInput _userInput;
         private InputActionRebindingExtensions.RebindingOperation _rebindingOperation;
-        
+        private ColourPickerController _colourPickerController;
         private IWindowController _windowController;
+        private GameObject _rootGO;
         
-        public void Initialize(ISaveLoadService saveLoadService, IWindowController windowController, UserInput input)
+        public void Initialize(ISaveLoadService saveLoadService, IWindowController windowController, ColourPickerController colourController, UserInput input)
         {
             _saveLoadService = saveLoadService;
             _windowController = windowController;
+            _colourPickerController = colourController;
             _userInput = input;
+            _rootGO = transform.root.gameObject;
             
             _currentSettingsData = _saveLoadService.LoadData<SettingsData>(DATA_KEY) ?? new SettingsData()
             {
@@ -56,6 +60,7 @@ namespace TodoBoard
 
             SetupLanguageSettings();
             SetupDisplaySettings();
+            SetupColorSettings();
             SetupInputSettings();
             SetupAudioSettings();
             
@@ -67,7 +72,6 @@ namespace TodoBoard
             _languageDropdown.onValueChanged.AddListener(OnLanguageChanged);
             
             _fpsFocusedSlider.onValueChanged.AddListener(OnFPSFocusedChanged);
-            _fpsUnfocusedSlider.onValueChanged.AddListener(OnFPSUnFocusedChanged);
             
             _toggleAlwaysOnTopButton.onClick.AddListener(OnToggleAlwaysOnTopPressed);
             _toggleAlwaysOnTopRestoreButton.onClick.AddListener(OnRestoreToggleAlwaysOnTopPressed);
@@ -76,14 +80,15 @@ namespace TodoBoard
             
             _clickVolumeSlider.onValueChanged.AddListener(OnClickVolumeChanged);
             _pomodoroAlarmSlider.onValueChanged.AddListener(OnPomodoroVolumeChanged);
+            
+            _changeBgColorButton.onClick.AddListener(OnChangeBgColorPressed);
         }
-
+        
         private void OnDisable()
         {
             _languageDropdown.onValueChanged.RemoveListener(OnLanguageChanged);
             
             _fpsFocusedSlider.onValueChanged.RemoveListener(OnFPSFocusedChanged);
-            _fpsUnfocusedSlider.onValueChanged.RemoveListener(OnFPSUnFocusedChanged);
             
             _toggleAlwaysOnTopButton.onClick.RemoveListener(OnToggleAlwaysOnTopPressed);
             _toggleAlwaysOnTopRestoreButton.onClick.RemoveListener(OnRestoreToggleAlwaysOnTopPressed);
@@ -93,7 +98,9 @@ namespace TodoBoard
             _clickVolumeSlider.onValueChanged.RemoveListener(OnClickVolumeChanged);
             _pomodoroAlarmSlider.onValueChanged.RemoveListener(OnPomodoroVolumeChanged);
             
-            Save();
+            _changeBgColorButton.onClick.RemoveListener(OnChangeBgColorPressed);
+
+            //Save();
         }
 
         private void OnDestroy()
@@ -137,8 +144,7 @@ namespace TodoBoard
             _alwaysOnTopToggle.SetIsOnWithoutNotify(_currentSettingsData.alwaysOnTop);
             ChangeAlwaysOnTop();
             
-            OnFPSFocusedChanged(_currentSettingsData.fpsFocused);
-            OnFPSUnFocusedChanged(_currentSettingsData.fpsUnFocused);
+            SetFPS(_currentSettingsData.fpsFocused);
             
             QualitySettings.vSyncCount = 0;
             OnApplicationFocusChanged(Application.isFocused);
@@ -163,10 +169,17 @@ namespace TodoBoard
 
         private void SetupAudioSettings()
         {
-            _clickVolumeSlider.value = _currentSettingsData.clickVolume;
-            _pomodoroAlarmSlider.value = _currentSettingsData.pomodoroAlarm;
+            // _clickVolumeSlider.value = _currentSettingsData.clickVolume;
+            // _pomodoroAlarmSlider.value = _currentSettingsData.pomodoroAlarm;
         }
-
+        
+        private void SetupColorSettings()
+        {
+            _colourPickerController.gameObject.SetActive(false);
+            HSVColor savedColor = _currentSettingsData.bgColor;
+            _uiMaterial.color = Color.HSVToRGB(savedColor.h, savedColor.s, savedColor.v);
+        }
+        
         private void AlwaysOnTopChanged(bool value)
         {
             _currentSettingsData.alwaysOnTop = value;
@@ -189,7 +202,39 @@ namespace TodoBoard
 
             Save();
         }
+        
+        private void OnChangeBgColorPressed()
+        {
+            _changeBgColorButton.interactable = false;
+            
+            _colourPickerController.SetColour(_currentSettingsData.bgColor);
+            _colourPickerController.Show();
+            
+            _colourPickerController.OnColorChanged += ColourPickerController_OnColorChanged;
+            _colourPickerController.OnColorSelectionDone += ColourPicker_OnBgColorSelectionDone;
+        }
 
+        private void ColourPickerController_OnColorChanged(float h, float s, float v)
+        {
+            _uiMaterial.color = Color.HSVToRGB(h, s, v);
+            _rootGO.SetActive(false);
+            _rootGO.SetActive(true);
+        }
+
+        private void ColourPicker_OnBgColorSelectionDone(HSVColor color)
+        {
+            _changeBgColorButton.interactable = true;
+            _currentSettingsData.bgColor = color;
+            _colourPickerController.Hide();
+            
+            ColourPickerController_OnColorChanged(color.h, color.s, color.v);
+            
+            _colourPickerController.OnColorSelectionDone -= ColourPicker_OnBgColorSelectionDone;
+            _colourPickerController.OnColorChanged -= ColourPickerController_OnColorChanged;
+            
+            Save();
+        }
+        
         private void OnClickVolumeChanged(float value)
         {
             
@@ -273,28 +318,23 @@ namespace TodoBoard
 
         private void OnFPSFocusedChanged(float value)
         {
+            SetFPS(value);
+            Save();
+        }
+
+        private void SetFPS(float value)
+        {
             int intValue = (int)value;
             int fps = intValue * 10;
             _fpsFocusedNumber.text = fps.ToString();
             _currentSettingsData.fpsFocused = intValue;
             
             Application.targetFrameRate = fps;
-            Save();
-        }
-        
-        private void OnFPSUnFocusedChanged(float value)
-        {
-            int intValue = (int)value;
-            int fps = intValue * 10;
-            _fpsUnfocusedNumber.text = fps.ToString();
-            _currentSettingsData.fpsUnFocused = intValue;
-            
-            Save();
         }
 
         private void OnApplicationFocusChanged(bool hasFocus)
         {
-            Application.targetFrameRate = (hasFocus ? _currentSettingsData.fpsFocused : _currentSettingsData.fpsUnFocused) * 10;
+            Application.targetFrameRate = (hasFocus ? _currentSettingsData.fpsFocused * 10 : _currentSettingsData.fpsUnFocused);
         }
 
         private void Save()

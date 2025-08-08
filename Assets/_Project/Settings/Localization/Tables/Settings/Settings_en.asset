@@ -39,11 +39,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 1542405222400
-    m_Localized: Fps Focused
-    m_Metadata:
-      m_Items: []
-  - m_Id: 1581663907840
-    m_Localized: Fps Unfocused
+    m_Localized: Fps
     m_Metadata:
       m_Items: []
   - m_Id: 2215708454912
@@ -60,6 +56,22 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 77691252633600
     m_Localized: Press key...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7619618177019904
+    m_Localized: Colors
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7620866208952320
+    m_Localized: Background color
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7621326617702400
+    m_Localized: TextColor
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7977522528776192
+    m_Localized: Open color picker
     m_Metadata:
       m_Items: []
   references:

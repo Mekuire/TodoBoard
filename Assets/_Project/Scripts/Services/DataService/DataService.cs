@@ -104,6 +104,7 @@ namespace TodoBoard
         /// <returns>true, if data was saved, otherwise false</returns>
         public static bool SaveData<T>(T data, string fileName)
         {
+            Debug.Log("Save");
             if (IsSerializable(data))
             {
                 string json = JsonConvert.SerializeObject(data);
@@ -160,6 +161,7 @@ namespace TodoBoard
         /// <returns>true, if data is found, otherwise false</returns>
         public static bool LoadData<T>(string fileName, out T data)
         {
+            Debug.Log("Load");
             string path = $"{Application.persistentDataPath}/{fileName}.json";
 
             if (File.Exists(path))

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -8,6 +9,7 @@ namespace TodoBoard
     public class ToDoPanel : Panel, ITaskDeleter, IListDeleter, IListOpener, IDataUpdater
     {
         private const string DATA_KEY = "todo-list";
+        private const float POSITION_X_AFTER_CHANGING_ANCHOR = 531.24f;
 
         [Header("Main Tasks Menu")] 
         [SerializeField] private Button _editListButton;
@@ -54,6 +56,13 @@ namespace TodoBoard
             SetupToDoList(_currentData, _currentListId);
 
             PreventAddingExtraList();
+        }
+
+        private void Start()
+        {
+            Vector3 position = transform.localPosition;
+            position.x = POSITION_X_AFTER_CHANGING_ANCHOR;
+            transform.localPosition = position;
         }
 
         private void OnEnable()

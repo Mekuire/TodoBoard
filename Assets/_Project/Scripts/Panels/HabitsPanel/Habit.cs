@@ -26,27 +26,30 @@ namespace TodoBoard
             _dataUpdater = dataUpdater;
             _deleter = deleter;
             _habitData = habitData;
+            
             _inputField.text = habitData.Name;
-            _toggleMonday.isOn = habitData.Monday;
-            _toggleTuesday.isOn = habitData.Tuesday;
-            _toggleWednesday.isOn = habitData.Wednesday;
-            _toggleThursday.isOn = habitData.Thursday;
-            _toggleFriday.isOn = habitData.Friday;
-            _toggleSaturday.isOn = habitData.Saturday;
-            _toggleSunday.isOn = habitData.Sunday;
+            _toggleMonday.SetIsOnWithoutNotify(habitData.Monday);
+            _toggleTuesday.SetIsOnWithoutNotify(habitData.Tuesday);
+            _toggleWednesday.SetIsOnWithoutNotify(habitData.Wednesday);
+            _toggleThursday.SetIsOnWithoutNotify(habitData.Thursday);
+            _toggleFriday.SetIsOnWithoutNotify(habitData.Friday);
+            _toggleSaturday.SetIsOnWithoutNotify(habitData.Saturday);
+            _toggleSunday.SetIsOnWithoutNotify(habitData.Sunday);
             
             _deleteHabitButton.gameObject.SetActive(false);
         }
 
         public void ClearCheckmarks()
         {
-            _toggleMonday.isOn = false;
-            _toggleTuesday.isOn = false;
-            _toggleWednesday.isOn = false;
-            _toggleThursday.isOn = false;
-            _toggleFriday.isOn = false;
-            _toggleSaturday.isOn = false;
-            _toggleSunday.isOn = false;
+            _toggleMonday.SetIsOnWithoutNotify(false);
+            _toggleTuesday.SetIsOnWithoutNotify(false);
+            _toggleWednesday.SetIsOnWithoutNotify(false);
+            _toggleThursday.SetIsOnWithoutNotify(false);
+            _toggleFriday.SetIsOnWithoutNotify(false);
+            _toggleSaturday.SetIsOnWithoutNotify(false);
+            _toggleSunday.SetIsOnWithoutNotify(false);
+            
+            _dataUpdater.UpdateData();
         }
         
         private void OnEnable()

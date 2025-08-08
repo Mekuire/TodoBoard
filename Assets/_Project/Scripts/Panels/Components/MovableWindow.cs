@@ -39,7 +39,6 @@ namespace TodoBoard
 
             float minX = -canvasHalfW + size.x * p.x;
             float maxX =  canvasHalfW - size.x * (1 - p.x);
-
             float minY = -canvasHalfH + size.y * p.y;
             float maxY =  canvasHalfH - size.y * (1 - p.y);
 
