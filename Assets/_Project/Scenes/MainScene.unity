@@ -7235,7 +7235,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: 269.89673, y: 0}
+  m_AnchoredPosition: {x: 242.38, y: 0}
   m_SizeDelta: {x: 403.1934, y: 384.2665}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1116137609
@@ -8670,6 +8670,7 @@ GameObject:
   - component: {fileID: 1250929159}
   - component: {fileID: 1250929161}
   - component: {fileID: 1250929160}
+  - component: {fileID: 1250929162}
   m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -8795,6 +8796,46 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1250929158}
   m_CullTransparentMesh: 1
+--- !u!114 &1250929162
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1250929158}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 56eb0353ae6e5124bb35b17aff880f16, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_StringReference:
+    m_TableReference:
+      m_TableCollectionName: GUID:e0adfc9c5e526a4419e3e4e28eee4a2b
+    m_TableEntryReference:
+      m_KeyId: 5624819712
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  m_FormatArguments: []
+  m_UpdateString:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1250929160}
+        m_TargetAssemblyTypeName: TMPro.TMP_Text, Unity.TextMeshPro
+        m_MethodName: set_text
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  references:
+    version: 2
+    RefIds: []
 --- !u!1 &1253679775
 GameObject:
   m_ObjectHideFlags: 0
@@ -11042,7 +11083,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _languageDropdown: {fileID: 1952515198}
   _alwaysOnTopToggle: {fileID: 2087909042}
-  _fpsFocusedSlider: {fileID: 571199285}
+  _targetFpsSlider: {fileID: 571199285}
   _fpsFocusedNumber: {fileID: 1921895506}
   _uiMaterial: {fileID: 2100000, guid: 69ff9d178f6bdc94d89fe199b7850d5b, type: 2}
   _changeBgColorButton: {fileID: 1360334510}

@@ -8,7 +8,7 @@ namespace TodoBoard
     {
         public string language;
         public bool alwaysOnTop = true;
-        public int fpsFocused = 5;
+        public int fpsFocused = 12;
         public int fpsUnFocused = 5;
         public string inputOverride = "";
         public HSVColor bgColor = HSVColor.white;

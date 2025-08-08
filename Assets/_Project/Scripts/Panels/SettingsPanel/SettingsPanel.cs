@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Localization;
 using UnityEngine.Localization.Settings;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace TodoBoard
@@ -17,7 +18,8 @@ namespace TodoBoard
         [SerializeField] private TMP_Dropdown _languageDropdown;
         [Header("Display")] 
         [SerializeField] private Toggle _alwaysOnTopToggle;
-        [SerializeField] private Slider _fpsFocusedSlider;
+        [FormerlySerializedAs("_fpsFocusedSlider")] 
+        [SerializeField] private Slider _targetFpsSlider;
         [SerializeField] private TextMeshProUGUI _fpsFocusedNumber;
         [Header("Colors")]
         [SerializeField] private Material _uiMaterial;
@@ -71,7 +73,7 @@ namespace TodoBoard
         {
             _languageDropdown.onValueChanged.AddListener(OnLanguageChanged);
             
-            _fpsFocusedSlider.onValueChanged.AddListener(OnFPSFocusedChanged);
+            _targetFpsSlider.onValueChanged.AddListener(OnTargetFPSChanged);
             
             _toggleAlwaysOnTopButton.onClick.AddListener(OnToggleAlwaysOnTopPressed);
             _toggleAlwaysOnTopRestoreButton.onClick.AddListener(OnRestoreToggleAlwaysOnTopPressed);
@@ -88,7 +90,7 @@ namespace TodoBoard
         {
             _languageDropdown.onValueChanged.RemoveListener(OnLanguageChanged);
             
-            _fpsFocusedSlider.onValueChanged.RemoveListener(OnFPSFocusedChanged);
+            _targetFpsSlider.onValueChanged.RemoveListener(OnTargetFPSChanged);
             
             _toggleAlwaysOnTopButton.onClick.RemoveListener(OnToggleAlwaysOnTopPressed);
             _toggleAlwaysOnTopRestoreButton.onClick.RemoveListener(OnRestoreToggleAlwaysOnTopPressed);
@@ -143,6 +145,9 @@ namespace TodoBoard
 
             _alwaysOnTopToggle.SetIsOnWithoutNotify(_currentSettingsData.alwaysOnTop);
             ChangeAlwaysOnTop();
+            
+            _targetFpsSlider.SetValueWithoutNotify(_currentSettingsData.fpsFocused);
+            _fpsFocusedNumber.text = (_currentSettingsData.fpsFocused * 10).ToString();
             
             SetFPS(_currentSettingsData.fpsFocused);
             
@@ -316,7 +321,7 @@ namespace TodoBoard
             Save();
         }
 
-        private void OnFPSFocusedChanged(float value)
+        private void OnTargetFPSChanged(float value)
         {
             SetFPS(value);
             Save();
