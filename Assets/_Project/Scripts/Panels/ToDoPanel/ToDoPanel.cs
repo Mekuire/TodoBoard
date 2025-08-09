@@ -6,7 +6,7 @@ using Button = UnityEngine.UI.Button;
 
 namespace TodoBoard
 {
-    public class ToDoPanel : Panel, ITaskDeleter, IListDeleter, IListOpener, IDataUpdater
+    public class ToDoPanel : Panel, ITaskDeleter, IListDeleter, IListOpener, IDataUpdater, ITaskReplacer
     {
         private const string DATA_KEY = "todo-list";
         private const float POSITION_X_AFTER_CHANGING_ANCHOR = 531.24f;
@@ -32,6 +32,9 @@ namespace TodoBoard
         private const int MaxLists = 5;
         private ToDoData _currentData;
         private string _currentListId;
+        private List<TaskItem> _tasksTransforms;
+        
+        public bool IsDragging { get; private set; }
 
         public void Initialize(ISaveLoadService saveLoadService)
         {
@@ -48,7 +51,8 @@ namespace TodoBoard
 
             _currentData ??= GetBasicToDoList();
             _currentListId = _currentData.TaskLists[0].Id;
-
+            _tasksTransforms = new();
+            
             ToggleListEditMenu(false);
             ToggleTasksMenu(true);
 
@@ -215,7 +219,7 @@ namespace TodoBoard
         private void CreateTaskObject(TaskData data)
         {
             TaskItem taskItem = Instantiate(taskItemPrefab, _scrollView.content);
-            taskItem.Initialize(data, deleter: this, dataUpdater: this);
+            taskItem.Initialize(data, deleter: this, dataUpdater: this, taskReplacer: this);
         }
 
         private void CreateListObject(TaskListData taskList)
@@ -302,6 +306,59 @@ namespace TodoBoard
         public void UpdateData()
         {
             Save();
+        }
+
+        public void OnDragStart()
+        {
+            IsDragging = true;
+            _tasksTransforms.AddRange(_scrollView.content.GetComponentsInChildren<TaskItem>());
+        }
+        
+        public void OnDragComplete()
+        {
+            _tasksTransforms.Clear();
+            IsDragging = false;
+            Save();
+        }
+
+        public void OnDragTask(TaskItem dragTask, Vector3 dragPosition)
+        {
+            foreach (var task in _tasksTransforms)
+            {
+                if (task.transform == dragTask) continue;
+
+                if (dragPosition.y > task.transform.position.y && dragTask.transform.GetSiblingIndex() > task.transform.GetSiblingIndex())
+                {
+                    ReplaceTaskPositions(task);
+                    
+                    ReplaceTaskData(task);
+                }
+                else if (dragPosition.y < task.transform.position.y && dragTask.transform.GetSiblingIndex() < task.transform.GetSiblingIndex())
+                {
+                    ReplaceTaskPositions(task);
+
+                    ReplaceTaskData(task);
+                }
+            }
+
+            void ReplaceTaskData(TaskItem task)
+            {
+                TaskListData taskList = _currentData.TaskLists.Find((list) => list.Id == _currentListId);
+                int dragTaskIndex = taskList.Tasks.IndexOf(dragTask.TaskData);
+                int replaceTaskIndex = taskList.Tasks.IndexOf(task.TaskData);
+                    
+                taskList.Tasks[dragTaskIndex] = task.TaskData;
+                taskList.Tasks[replaceTaskIndex] = dragTask.TaskData;
+            }
+
+            void ReplaceTaskPositions(TaskItem task)
+            {
+                int index = task.transform.GetSiblingIndex();
+                int index2 = dragTask.transform.GetSiblingIndex();
+                    
+                task.transform.SetSiblingIndex(index2);
+                dragTask.transform.SetSiblingIndex(index);
+            }
         }
     }
 }
