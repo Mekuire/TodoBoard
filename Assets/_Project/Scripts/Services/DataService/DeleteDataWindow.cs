@@ -7,7 +7,7 @@ namespace TodoBoard
 {
     public class DeleteDataWindow : EditorWindow
     {
-        private string fileName = "save";
+        private string fileName = "save.json";
 
         [MenuItem("Tools/Data/Delete Save")]
         public static void ShowWindow()
@@ -23,7 +23,8 @@ namespace TodoBoard
 
             if (GUILayout.Button("Удалить файл"))
             {
-                if (DataService.DeleteData(fileName))
+                DataService dataService = new DataService();
+                if (dataService.DeleteData(fileName))
                 {
                     Debug.Log($"Файл '{fileName}' успешно удалён.");
                 }

@@ -2,52 +2,67 @@ using System.Collections.Generic;
 using Desdinova;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace TodoBoard
 {
     [RequireComponent(typeof(Button))]
-    public class Main : MonoBehaviour, ISaveLoadService
+    public class Main : MonoBehaviour, IServiceProvider
     {
         [SerializeField] private SlidingList _slideObject;
         [Space]
         [SerializeField] private ToDoPanel _toDoPanel;
         [SerializeField] private HabitsPanel _habitsPanel;
         [SerializeField] private SettingsPanel _settingsPanel;
-        [SerializeField] private ColourPickerController _colourPickerController;
+        [FormerlySerializedAs("_colourPickerPanel")] [SerializeField] private ColorPickerPanel colorPickerPanel;
         [Space]
         [SerializeField] private TransparentWindowController _windowController;
         
-        private Button _button;
-        private UserInput  _userInput;
-        private bool _listExpanded;
+        private Button _mainButton;
+        private UserInput _userInput;
+        private DataService _dataService;
         private List<Panel> _panels;
+        private bool _listExpanded;
         
+        public ISaveLoadService SaveLoadService => _dataService;
+        public IWindowController WindowController => _windowController;
+        public IColorPickerController ColorPickerController => colorPickerPanel;
+        public UserInput UserInput => _userInput;
+
         private void Awake()
         {
-            _button = GetComponent<Button>();
+            _mainButton = GetComponent<Button>();
+            _dataService = new DataService();
             _userInput = new UserInput();
             _userInput.Enable();
             
-            _colourPickerController.Initialize();
-            _toDoPanel.Initialize(this);
-            _habitsPanel.Initialize(this);
-            _settingsPanel.Initialize(this, _windowController, _colourPickerController, _userInput);
-
             _panels = new List<Panel>()
             {
                 _toDoPanel,
                 _habitsPanel,
-                _settingsPanel
+                _settingsPanel,
+                colorPickerPanel
             };
+
+            foreach (var panel in _panels)
+            {
+                panel.Initialize(this);
+            }
         }
         
         private void OnEnable()
         {
-            _button.onClick.AddListener(SwitchListState);
+            _mainButton.onClick.AddListener(SwitchListState);
             _userInput.MenuUI.HideAllPanels.performed += HideAllPanelsOnPerformed;
         }
         
+        private void OnDisable()
+        {
+            _mainButton.onClick.RemoveListener(SwitchListState);
+            _userInput.MenuUI.HideAllPanels.performed -= HideAllPanelsOnPerformed;
+        }
+
         private void HideAllPanelsOnPerformed(InputAction.CallbackContext obj)
         {
             foreach (Panel panel in _panels)
@@ -58,23 +73,6 @@ namespace TodoBoard
             if (!_slideObject) return;
             _slideObject.Collapse(() => _listExpanded = false);
         }
-
-        private void OnDisable()
-        {
-            _button.onClick.RemoveListener(SwitchListState);
-            _userInput.MenuUI.HideAllPanels.performed -= HideAllPanelsOnPerformed;
-        }
-        
-        public void SaveData<T>(T data, string fileName)
-        {
-            DataService.SaveData(data, fileName);
-        }
-
-        public T LoadData<T>(string fileName)
-        {
-            DataService.LoadData<T>(fileName, out var data);
-            return data;
-        }
         
         private void SwitchListState()
         {
@@ -83,5 +81,13 @@ namespace TodoBoard
             if (_listExpanded) _slideObject.Collapse(() => _listExpanded = false);
             else _slideObject.Expand(() => _listExpanded = true);
         }
+    }
+
+    public interface IServiceProvider
+    {
+        ISaveLoadService SaveLoadService { get; }
+        IWindowController WindowController { get; }
+        IColorPickerController ColorPickerController { get; }
+        UserInput UserInput { get; }
     }
 }

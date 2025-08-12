@@ -12,7 +12,5 @@ namespace TodoBoard
         public int fpsUnFocused = 5;
         public string inputOverride = "";
         public HSVColor bgColor = HSVColor.white;
-        //public float clickVolume = 10f;
-        //public float pomodoroAlarm = 10f;
     }
 }

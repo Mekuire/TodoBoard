@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace TodoBoard
@@ -8,7 +9,7 @@ namespace TodoBoard
     {
         private const string DATA_KEY = "habits";
 
-        [SerializeField] private Habit _habitPrefab;
+        [FormerlySerializedAs("_habitPrefab")] [SerializeField] private HabitItem habitItemPrefab;
         [SerializeField] private ScrollRect _habitsScrollView;
         [SerializeField] private Button _addButton;
         [SerializeField] private Button _clearCheckmarksButton;
@@ -16,10 +17,11 @@ namespace TodoBoard
         [SerializeField] private bool _saveDataInEditor = true;
 
         private HabitsData _currentData;
+        private ISaveLoadService _saveLoadService;
         
-        public void Initialize(ISaveLoadService saveLoadService)
+        public override void Initialize(IServiceProvider provider)
         {
-            _saveLoadService = saveLoadService;
+            _saveLoadService = provider.SaveLoadService;
             Setup();
             Hide();
         }
@@ -58,7 +60,7 @@ namespace TodoBoard
                 habit.Sunday = false;
             }
             
-            foreach (Habit habit in _habitsScrollView.content.GetComponentsInChildren<Habit>())
+            foreach (HabitItem habit in _habitsScrollView.content.GetComponentsInChildren<HabitItem>())
             {
                 habit.ClearCheckmarks();
             }
@@ -68,7 +70,7 @@ namespace TodoBoard
         
         private void Setup()
         {
-            _currentData = _saveLoadService.LoadData<HabitsData>(DATA_KEY);
+            _saveLoadService.LoadData<HabitsData>(DATA_KEY, out _currentData);
             _currentData ??= GetBasicHabitsData();
             
             SetupHabits(_currentData);
@@ -99,9 +101,9 @@ namespace TodoBoard
         
         private void CreateHabitObject(HabitData data)
         {
-            Habit habit = Instantiate(_habitPrefab, _habitsScrollView.content);
+            HabitItem habitItem = Instantiate(habitItemPrefab, _habitsScrollView.content);
 
-            habit.Initialize(data, deleter: this, dataUpdater: this);
+            habitItem.Initialize(data, deleter: this, dataUpdater: this);
         }
         
         private HabitsData GetBasicHabitsData()

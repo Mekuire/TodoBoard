@@ -6,10 +6,10 @@ namespace TodoBoard
 {
     public abstract class Panel : MonoBehaviour
     {
-        protected ISaveLoadService _saveLoadService;
-        
         protected bool _isActive;
         public bool IsActive => _isActive;
+        
+        public abstract void Initialize(IServiceProvider serviceProvider);
         
         public virtual void Show(Action onComplete = null)
         {

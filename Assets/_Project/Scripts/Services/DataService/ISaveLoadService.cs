@@ -2,7 +2,7 @@
 {
     public interface ISaveLoadService
     {
-        void SaveData<T>(T data, string fileName);
-        T LoadData<T>(string fileName);
+        bool SaveData<T>(T data, string fileName);
+        bool LoadData<T>(string fileName, out T data);
     }
 }

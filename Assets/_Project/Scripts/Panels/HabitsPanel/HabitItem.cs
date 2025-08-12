@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 namespace TodoBoard
 {
-    public class Habit : MonoBehaviour
+    public class HabitItem : MonoBehaviour
     {
         [SerializeField] private TMP_InputField _inputField;
         [SerializeField] private Button _deleteHabitButton;
@@ -67,6 +67,21 @@ namespace TodoBoard
             _toggleSunday.onValueChanged.AddListener(OnSundayToggleChanged);
         }
 
+        private void OnDisable()
+        {
+            _deleteHabitButton.onClick.RemoveListener(OnTaskDelete);
+            _inputField.onSubmit.RemoveListener(OnNameChanged);
+            _pointerEventsObject.OnPointerEntered -= OnPointerEnter;
+            _pointerEventsObject.OnPointerExited -= OnPointerExit;
+            _toggleMonday.onValueChanged.RemoveListener(OnMondayToggleChanged);
+            _toggleTuesday.onValueChanged.RemoveListener(OnTuesdayToggleChanged);
+            _toggleWednesday.onValueChanged.RemoveListener(OnWednesdayToggleChanged);
+            _toggleThursday.onValueChanged.RemoveListener(OnThursdayToggleChanged);
+            _toggleFriday.onValueChanged.RemoveListener(OnFridayToggleChanged);
+            _toggleSaturday.onValueChanged.RemoveListener(OnSaturdayToggleChanged);
+            _toggleSunday.onValueChanged.RemoveListener(OnSundayToggleChanged);
+        }
+
         private void OnTaskDelete()
         {
             _deleter.DeleteHabit(_habitData, gameObject);
@@ -120,21 +135,6 @@ namespace TodoBoard
             _dataUpdater.UpdateData();
         }
         
-        private void OnDisable()
-        {
-            _deleteHabitButton.onClick.RemoveListener(OnTaskDelete);
-            _inputField.onSubmit.RemoveListener(OnNameChanged);
-            _pointerEventsObject.OnPointerEntered -= OnPointerEnter;
-            _pointerEventsObject.OnPointerExited -= OnPointerExit;
-            _toggleMonday.onValueChanged.RemoveListener(OnMondayToggleChanged);
-            _toggleTuesday.onValueChanged.RemoveListener(OnTuesdayToggleChanged);
-            _toggleWednesday.onValueChanged.RemoveListener(OnWednesdayToggleChanged);
-            _toggleThursday.onValueChanged.RemoveListener(OnThursdayToggleChanged);
-            _toggleFriday.onValueChanged.RemoveListener(OnFridayToggleChanged);
-            _toggleSaturday.onValueChanged.RemoveListener(OnSaturdayToggleChanged);
-            _toggleSunday.onValueChanged.RemoveListener(OnSundayToggleChanged);
-        }
-
         private void OnPointerEnter()
         {
             _deleteHabitButton.gameObject.SetActive(true);

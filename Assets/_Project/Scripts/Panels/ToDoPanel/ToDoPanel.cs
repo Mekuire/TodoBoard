@@ -1,4 +1,4 @@
-using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -11,34 +11,38 @@ namespace TodoBoard
         private const string DATA_KEY = "todo-list";
         private const float POSITION_X_AFTER_CHANGING_ANCHOR = 531.24f;
 
-        [Header("Main Tasks Menu")] 
+        [Header("Main Tasks Menu")]
         [SerializeField] private Button _editListButton;
+
         [SerializeField] private Button _addTaskButton;
         [SerializeField] private ListButton _listButtonPrefab;
         [SerializeField] private RectTransform _listButtonsParent;
         [SerializeField] private ScrollRect _scrollView;
         [SerializeField] private GameObject _scrollContextPrefab;
         [SerializeField] private TaskItem taskItemPrefab;
-        [Space] 
-        [Header("Lists Edit Menu")] 
+
+        [Space]
+        [Header("Lists Edit Menu")]
         [SerializeField] private ListItem listItemPrefab;
+
         [SerializeField] private Button _confirmListsButton;
         [SerializeField] private Button _addListButton;
         [SerializeField] private ScrollRect _listScrollView;
-        [Space] 
-        [Header("Data")] 
+
+        [Space]
+        [Header("Data")]
         [SerializeField] private bool _saveDataInEditor = true;
 
         private const int MaxLists = 5;
         private ToDoData _currentData;
         private string _currentListId;
-        private List<TaskItem> _tasksTransforms;
-        
+        private List<TaskItem> _taskItems;
+        private ISaveLoadService _saveLoadService;
         public bool IsDragging { get; private set; }
 
-        public void Initialize(ISaveLoadService saveLoadService)
+        public override void Initialize(IServiceProvider serviceProvider)
         {
-            _saveLoadService = saveLoadService;
+            _saveLoadService = serviceProvider.SaveLoadService;
 
             Setup();
 
@@ -47,12 +51,12 @@ namespace TodoBoard
 
         private void Setup()
         {
-            _currentData = _saveLoadService.LoadData<ToDoData>(DATA_KEY);
-
+            _saveLoadService.LoadData<ToDoData>(DATA_KEY, out _currentData);
             _currentData ??= GetBasicToDoList();
+
             _currentListId = _currentData.TaskLists[0].Id;
-            _tasksTransforms = new();
-            
+            _taskItems = new();
+
             ToggleListEditMenu(false);
             ToggleTasksMenu(true);
 
@@ -311,31 +315,31 @@ namespace TodoBoard
         public void OnDragStart()
         {
             IsDragging = true;
-            _tasksTransforms.AddRange(_scrollView.content.GetComponentsInChildren<TaskItem>());
+            _taskItems.AddRange(_scrollView.content.GetComponentsInChildren<TaskItem>());
         }
-        
+
         public void OnDragComplete()
         {
-            _tasksTransforms.Clear();
+            _taskItems.Clear();
             IsDragging = false;
             Save();
         }
 
         public void OnDragTask(TaskItem dragTask, Vector3 dragPosition)
         {
-            foreach (var task in _tasksTransforms)
+            foreach (var task in _taskItems)
             {
-                if (task.transform == dragTask) continue;
+                if (task.transform == dragTask.transform) continue;
 
                 if (dragPosition.y > task.transform.position.y && dragTask.transform.GetSiblingIndex() > task.transform.GetSiblingIndex())
                 {
-                    ReplaceTaskPositions(task);
-                    
+                    ReplaceTransforms(dragTask.transform, task.transform);
+
                     ReplaceTaskData(task);
                 }
                 else if (dragPosition.y < task.transform.position.y && dragTask.transform.GetSiblingIndex() < task.transform.GetSiblingIndex())
                 {
-                    ReplaceTaskPositions(task);
+                    ReplaceTransforms(dragTask.transform, task.transform);
 
                     ReplaceTaskData(task);
                 }
@@ -344,21 +348,31 @@ namespace TodoBoard
             void ReplaceTaskData(TaskItem task)
             {
                 TaskListData taskList = _currentData.TaskLists.Find((list) => list.Id == _currentListId);
-                int dragTaskIndex = taskList.Tasks.IndexOf(dragTask.TaskData);
-                int replaceTaskIndex = taskList.Tasks.IndexOf(task.TaskData);
-                    
-                taskList.Tasks[dragTaskIndex] = task.TaskData;
-                taskList.Tasks[replaceTaskIndex] = dragTask.TaskData;
+                ReplaceData<TaskData>(dragTask.TaskData, task.TaskData, taskList.Tasks);
             }
+        }
 
-            void ReplaceTaskPositions(TaskItem task)
-            {
-                int index = task.transform.GetSiblingIndex();
-                int index2 = dragTask.transform.GetSiblingIndex();
-                    
-                task.transform.SetSiblingIndex(index2);
-                dragTask.transform.SetSiblingIndex(index);
-            }
+        private void ReplaceData<T>(T data1, T data2, IList<T> collection)
+        {
+            int index1 = collection.IndexOf(data1);
+            int index2 = collection.IndexOf(data2);
+
+            if (index1 == -1 || index2 == -1 || index1 == index2)
+                return;
+
+            (collection[index1], collection[index2]) = (collection[index2], collection[index1]);
+        }
+
+        private void ReplaceTransforms(Transform a, Transform b)
+        {
+            int indexA = a.GetSiblingIndex();
+            int indexB = b.GetSiblingIndex();
+
+            if (indexA == indexB)
+                return;
+
+            a.SetSiblingIndex(indexB);
+            b.SetSiblingIndex(indexA);
         }
     }
 }

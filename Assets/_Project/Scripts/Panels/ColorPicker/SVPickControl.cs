@@ -10,18 +10,22 @@ namespace TodoBoard
         [SerializeField] private RectTransform _picker;
         
         private RectTransform _boundsRect;
-
+        private float _minV;
+        
         public Action<float, float> OnValueChanged;
         
-        public void Initialize()
+        public void Initialize(float minV)
         {
+            _minV = minV;
             _boundsRect = GetComponent<RectTransform>();
         }
 
         public void SetPickerPositionByColor(HSVColor color)
         {
-            float x = color.s * _boundsRect.sizeDelta.x - _boundsRect.sizeDelta.x / 2;
-            float y = color.v * _boundsRect.sizeDelta.y - _boundsRect.sizeDelta.y / 2;
+            float halfWidth = _boundsRect.sizeDelta.x * 0.5f;
+            float halfHeight = _boundsRect.sizeDelta.y * 0.5f;
+            float x = Mathf.Lerp(-halfWidth, halfWidth, color.s);
+            float y = Mathf.Lerp(-halfHeight, halfHeight, Mathf.InverseLerp(_minV, 1f, color.v));
             _picker.localPosition = new Vector3(x, y, 0);
         }
         

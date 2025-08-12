@@ -7156,7 +7156,7 @@ MonoBehaviour:
   _toDoPanel: {fileID: 807253033}
   _habitsPanel: {fileID: 2140436205}
   _settingsPanel: {fileID: 1532248334}
-  _colourPickerController: {fileID: 1116137611}
+  colorPickerPanel: {fileID: 1116137611}
   _windowController: {fileID: 85865564}
 --- !u!1 &1106549916
 GameObject:
@@ -14952,7 +14952,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a4246a0adeeef54faada00b4cec6ef4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _habitPrefab: {fileID: 7014308578992305725, guid: 4e97032416a3f454092d65dd6a23f04f, type: 3}
+  habitItemPrefab: {fileID: 7014308578992305725, guid: 4e97032416a3f454092d65dd6a23f04f, type: 3}
   _habitsScrollView: {fileID: 1462912402}
   _addButton: {fileID: 182601448}
   _clearCheckmarksButton: {fileID: 1970016988}
@@ -15090,7 +15090,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3015234851973109439, guid: 4e97032416a3f454092d65dd6a23f04f, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3015234851973109439, guid: 4e97032416a3f454092d65dd6a23f04f, type: 3}
       propertyPath: m_AnchorMin.x
@@ -15098,11 +15098,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3015234851973109439, guid: 4e97032416a3f454092d65dd6a23f04f, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3015234851973109439, guid: 4e97032416a3f454092d65dd6a23f04f, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 786.85
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3015234851973109439, guid: 4e97032416a3f454092d65dd6a23f04f, type: 3}
       propertyPath: m_SizeDelta.y
@@ -15138,11 +15138,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3015234851973109439, guid: 4e97032416a3f454092d65dd6a23f04f, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 393.425
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3015234851973109439, guid: 4e97032416a3f454092d65dd6a23f04f, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -30.79
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3015234851973109439, guid: 4e97032416a3f454092d65dd6a23f04f, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x

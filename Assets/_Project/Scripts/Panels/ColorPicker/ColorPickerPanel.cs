@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 namespace TodoBoard
 {
-    public class ColourPickerController : Panel
+    public class ColorPickerPanel : Panel, IColorPickerController
     {
         [SerializeField] private RawImage _h;
         [SerializeField] private RawImage _sv;
@@ -20,12 +20,12 @@ namespace TodoBoard
         public event Action<float, float, float> OnColorChanged;
         public event Action<HSVColor> OnColorSelectionDone;
         
-        public void Initialize()
+        public override void Initialize(IServiceProvider provider)
         {
             CreateHTexture();
             CreateSVTexture();
             CreateOutTexture();
-            _picker.Initialize();
+            _picker.Initialize(_minV);
         }
         
         private void OnEnable()
@@ -129,5 +129,14 @@ namespace TodoBoard
             _outTexture.SetPixel(1, 1, Color.HSVToRGB(_currentH, _currentS, _currentV));
             _outTexture.Apply();
         }
+    }
+
+    public interface IColorPickerController
+    {
+        public void Show(Action onComplete = null);
+        public void Hide(Action onComplete = null);
+        public void SetColour(HSVColor color);
+        public event Action<float, float, float> OnColorChanged;
+        public event Action<HSVColor> OnColorSelectionDone;
     }
 }

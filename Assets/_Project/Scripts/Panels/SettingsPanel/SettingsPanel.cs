@@ -43,19 +43,22 @@ namespace TodoBoard
         private List<Locale> _locales;
         private UserInput _userInput;
         private InputActionRebindingExtensions.RebindingOperation _rebindingOperation;
-        private ColourPickerController _colourPickerController;
+        private IColorPickerController _colourPickerController;
         private IWindowController _windowController;
+        private ISaveLoadService _saveLoadService;
         private GameObject _rootGO;
         
-        public void Initialize(ISaveLoadService saveLoadService, IWindowController windowController, ColourPickerController colourController, UserInput input)
+        public override void Initialize(IServiceProvider serviceProvider)
         {
-            _saveLoadService = saveLoadService;
-            _windowController = windowController;
-            _colourPickerController = colourController;
-            _userInput = input;
-            _rootGO = transform.root.gameObject;
+            _saveLoadService = serviceProvider.SaveLoadService;
+            _windowController = serviceProvider.WindowController;
+            _colourPickerController = serviceProvider.ColorPickerController;
+            _userInput = serviceProvider.UserInput;
             
-            _currentSettingsData = _saveLoadService.LoadData<SettingsData>(DATA_KEY) ?? new SettingsData()
+            _rootGO = transform.root.gameObject;
+
+            _saveLoadService.LoadData<SettingsData>(DATA_KEY, out _currentSettingsData);
+            _currentSettingsData ??= new SettingsData()
             {
                 language = LocalizationSettings.SelectedLocale.LocaleName
             };
@@ -64,7 +67,6 @@ namespace TodoBoard
             SetupDisplaySettings();
             SetupColorSettings();
             SetupInputSettings();
-            SetupAudioSettings();
             
             Hide();
         }
@@ -171,16 +173,10 @@ namespace TodoBoard
             UpdateBindingDisplay(_userInput.MenuUI.HideAllPanels, _hideAllPanelsText);
             UpdateBindingDisplay(_userInput.MenuUI.ToggleAlwaysOnTop, _toggleAlwaysOnTopText);
         }
-
-        private void SetupAudioSettings()
-        {
-            // _clickVolumeSlider.value = _currentSettingsData.clickVolume;
-            // _pomodoroAlarmSlider.value = _currentSettingsData.pomodoroAlarm;
-        }
         
         private void SetupColorSettings()
         {
-            _colourPickerController.gameObject.SetActive(false);
+            _colourPickerController.Hide();
             HSVColor savedColor = _currentSettingsData.bgColor;
             _uiMaterial.color = Color.HSVToRGB(savedColor.h, savedColor.s, savedColor.v);
         }

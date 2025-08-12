@@ -9,9 +9,9 @@ using UnityEngine;
 
 namespace TodoBoard
 {
-    public static class DataService
+    public class DataService : ISaveLoadService
     {
-        private static readonly byte[] key = Encoding.UTF8.GetBytes("0123456789abcdef");
+        private readonly byte[] key = Encoding.UTF8.GetBytes("0123456789abcdef");
 
         /// <summary>
         /// This method saves custom data of type T into PlayerPrefs with certain key
@@ -22,7 +22,7 @@ namespace TodoBoard
         /// <param name="key">Unique key for storing this data</param>
         /// <param name="data">Data object to save</param>
         /// <returns>true, if data was saved, otherwise false</returns>
-        public static bool SavePrefsSecurely<T>(string key, T data)
+        public bool SavePrefsSecurely<T>(string key, T data)
         {
             try
             {
@@ -59,7 +59,7 @@ namespace TodoBoard
         /// <param name="key">Unique key for storing this data</param>
         /// <param name="data">Data object to load</param>
         /// <returns>true, if data is found, otherwise false</returns>
-        public static bool LoadPrefsSecurely<T>(string key, out T data)
+        public bool LoadPrefsSecurely<T>(string key, out T data)
         {
             data = default;
 
@@ -102,9 +102,9 @@ namespace TodoBoard
         /// <param name="data">Data object to save</param>
         /// <param name="fileName">File name</param>
         /// <returns>true, if data was saved, otherwise false</returns>
-        public static bool SaveData<T>(T data, string fileName)
+        public bool SaveData<T>(T data, string fileName)
         {
-            Debug.Log("Save");
+            //Debug.Log("Save");
             if (IsSerializable(data))
             {
                 string json = JsonConvert.SerializeObject(data);
@@ -124,13 +124,15 @@ namespace TodoBoard
         /// <param name="data">Data object to save</param>
         /// <param name="fileName">File name</param>
         /// <returns>true, if data was saved, otherwise false</returns>
-        public static bool SaveDataSecurely<T>(T data, string fileName)
+        public bool SaveDataSecurely<T>(T data, string fileName)
         {
             if (IsSerializable(data))
             {
                 // Step 1: Serialize the data into a binary format
                 BinaryFormatter formatter = new BinaryFormatter();
-                MemoryStream memoryStream = new MemoryStream();
+
+                using MemoryStream memoryStream = new MemoryStream();
+                
                 formatter.Serialize(memoryStream, data);
 
                 // Get the serialized byte array
@@ -159,9 +161,9 @@ namespace TodoBoard
         /// <param name="fileName">File name</param>
         /// <param name="data">Data object to load</param>
         /// <returns>true, if data is found, otherwise false</returns>
-        public static bool LoadData<T>(string fileName, out T data)
+        public bool LoadData<T>(string fileName, out T data)
         {
-            Debug.Log("Load");
+            //Debug.Log("Load");
             string path = $"{Application.persistentDataPath}/{fileName}.json";
 
             if (File.Exists(path))
@@ -184,7 +186,7 @@ namespace TodoBoard
         /// <param name="fileName">File name</param>
         /// <param name="data">Data object to load</param>
         /// <returns>true, if data is found, otherwise false</returns>
-        public static bool LoadDataSecurely<T>(string fileName, out T data)
+        public bool LoadDataSecurely<T>(string fileName, out T data)
         {
             string path = $"{Application.persistentDataPath}/{fileName}.data";
 
@@ -198,7 +200,7 @@ namespace TodoBoard
 
                 // Step 3: Deserialize the data back into the PlayerData object
                 BinaryFormatter formatter = new BinaryFormatter();
-                MemoryStream memoryStream = new MemoryStream(decryptedData);
+                using MemoryStream memoryStream = new MemoryStream(decryptedData);
                 data = (T)formatter.Deserialize(memoryStream);
                 return true;
             }
@@ -207,7 +209,7 @@ namespace TodoBoard
             return false;
         }
 
-        public static bool DeleteData(string fileName)
+        public bool DeleteData(string fileName)
         {
             if (string.IsNullOrWhiteSpace(fileName))
             {
@@ -234,13 +236,13 @@ namespace TodoBoard
         }
 
         
-        private static bool IsSerializable<T>(T obj)
+        private bool IsSerializable<T>(T obj)
         {
             return ((obj is ISerializable) || (Attribute.IsDefined(typeof(T), typeof(SerializableAttribute))));
         }
 
         // Encrypt the byte array using AES encryption
-        private static byte[] EncryptData(byte[] data)
+        private byte[] EncryptData(byte[] data)
         {
             using (Aes aesAlg = Aes.Create())
             {
@@ -265,7 +267,7 @@ namespace TodoBoard
 
 
         // Decrypt the byte array using AES decryption
-        private static byte[] DecryptData(byte[] data)
+        private byte[] DecryptData(byte[] data)
         {
             if (data == null || data.Length < 16)
                 throw new ArgumentException("Invalid data: Too short to contain an IV and encrypted data.");
